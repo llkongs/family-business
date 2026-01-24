@@ -30,46 +30,57 @@ export interface Category {
 
 // Store Information
 export const storeInfo: StoreInfo = {
-    name: '家和美食坊',
-    phone: '138-8888-8888',
+    name: '绍兴黄酒专卖',
+    phone: '0575-8888-8888',
     qrCodeUrl: 'data:image/svg+xml,' + encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
       <rect fill="white" width="100" height="100"/>
-      <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#333">扫码关注</text>
+      <text x="50" y="45" text-anchor="middle" font-size="10" fill="#8B4513">扫码关注</text>
+      <text x="50" y="60" text-anchor="middle" font-size="8" fill="#666">公众号</text>
     </svg>
   `)
 };
 
 // Media playlist - videos and images for the ad display
 export const mediaPlaylist: MediaItem[] = [
+    // 古越龙山系列
     {
-        type: 'video',
-        url: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-        title: '美食广告1'
+        type: 'image',
+        url: '/images/brands/guyuelongshan_palace.png',
+        title: '古越龙山 - 国宴专用',
+        duration: 5000
     },
     {
         type: 'image',
-        url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=1200&fit=crop',
-        title: '精选美食',
-        duration: 4000
+        url: '/images/brands/guyuelongshan_brewing.png',
+        title: '古越龙山 - 传统酿造',
+        duration: 5000
+    },
+    // 会稀山系列
+    {
+        type: 'image',
+        url: '/images/brands/kuaijishan_scenery.png',
+        title: '会稀山 - 山水意境',
+        duration: 5000
     },
     {
         type: 'image',
-        url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&h=1200&fit=crop',
-        title: '招牌菜品',
-        duration: 4000
+        url: '/images/brands/kuaijishan_cellar.png',
+        title: '会稀山 - 280年传承',
+        duration: 5000
+    },
+    // 女儿红系列
+    {
+        type: 'image',
+        url: '/images/brands/nverhong_bride.png',
+        title: '女儿红 - 婚嫁祝福',
+        duration: 5000
     },
     {
         type: 'image',
-        url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=1200&fit=crop',
-        title: '新品推荐',
-        duration: 4000
-    },
-    {
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=1200&fit=crop',
-        title: '健康美食',
-        duration: 4000
+        url: '/images/brands/nverhong_tradition.png',
+        title: '女儿红 - 十八年传承',
+        duration: 5000
     }
 ];
 
