@@ -2,7 +2,10 @@ import './style.css';
 import { AdDisplay } from './pages/AdDisplay';
 import { ProductMenu } from './pages/ProductMenu';
 
-type Page = 'ad' | 'menu';
+type Page = 'ad' | 'menu' | 'password';
+
+// Password for access
+const ACCESS_PASSWORD = '594822';
 
 class App {
   private container: HTMLElement;
@@ -11,7 +14,60 @@ class App {
 
   constructor() {
     this.container = document.getElementById('app')!;
-    this.navigateTo('ad');
+
+    // Check if already authenticated in this session
+    if (sessionStorage.getItem('authenticated') === 'true') {
+      this.navigateTo('ad');
+    } else {
+      this.showPasswordGate();
+    }
+  }
+
+  private showPasswordGate(): void {
+    this.container.innerHTML = `
+      <div class="password-gate">
+        <div class="password-box">
+          <div class="password-icon">🔐</div>
+          <h2 class="password-title">绍兴黄酒专卖</h2>
+          <p class="password-subtitle">请输入访问密码</p>
+          <input type="password" id="password-input" class="password-input" placeholder="请输入密码" maxlength="10" />
+          <button id="password-submit" class="password-submit">进入</button>
+          <p id="password-error" class="password-error"></p>
+        </div>
+      </div>
+    `;
+
+    const input = document.getElementById('password-input') as HTMLInputElement;
+    const submit = document.getElementById('password-submit');
+    const error = document.getElementById('password-error');
+
+    // Submit on button click
+    submit?.addEventListener('click', () => this.checkPassword(input, error));
+
+    // Submit on Enter key
+    input?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        this.checkPassword(input, error);
+      }
+    });
+
+    // Auto focus
+    input?.focus();
+  }
+
+  private checkPassword(input: HTMLInputElement, error: HTMLElement | null): void {
+    const password = input.value;
+
+    if (password === ACCESS_PASSWORD) {
+      sessionStorage.setItem('authenticated', 'true');
+      this.navigateTo('ad');
+    } else {
+      if (error) {
+        error.textContent = '密码错误，请重试';
+      }
+      input.value = '';
+      input.focus();
+    }
   }
 
   private navigateTo(page: Page): void {
