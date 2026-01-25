@@ -41,44 +41,47 @@ export const storeInfo: StoreInfo = {
   `)
 };
 
+// Get base URL for assets (works with GitHub Pages subpath)
+const BASE_URL = import.meta.env.BASE_URL;
+
 // Media playlist - videos and images for the ad display
 export const mediaPlaylist: MediaItem[] = [
     // 古越龙山系列
     {
         type: 'image',
-        url: '/images/brands/guyuelongshan_palace.png',
+        url: `${BASE_URL}images/brands/guyuelongshan_palace.png`,
         title: '古越龙山 - 国宴专用',
         duration: 5000
     },
     {
         type: 'image',
-        url: '/images/brands/guyuelongshan_brewing.png',
+        url: `${BASE_URL}images/brands/guyuelongshan_brewing.png`,
         title: '古越龙山 - 传统酿造',
         duration: 5000
     },
     // 会稀山系列
     {
         type: 'image',
-        url: '/images/brands/kuaijishan_scenery.png',
+        url: `${BASE_URL}images/brands/kuaijishan_scenery.png`,
         title: '会稀山 - 山水意境',
         duration: 5000
     },
     {
         type: 'image',
-        url: '/images/brands/kuaijishan_cellar.png',
+        url: `${BASE_URL}images/brands/kuaijishan_cellar.png`,
         title: '会稀山 - 280年传承',
         duration: 5000
     },
     // 女儿红系列
     {
         type: 'image',
-        url: '/images/brands/nverhong_bride.png',
+        url: `${BASE_URL}images/brands/nverhong_bride.png`,
         title: '女儿红 - 婚嫁祝福',
         duration: 5000
     },
     {
         type: 'image',
-        url: '/images/brands/nverhong_tradition.png',
+        url: `${BASE_URL}images/brands/nverhong_tradition.png`,
         title: '女儿红 - 十八年传承',
         duration: 5000
     }
