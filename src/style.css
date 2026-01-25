@@ -511,6 +511,25 @@ body {
   border-radius: var(--radius-md);
   object-fit: cover;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Image watermark container */
+.product-card {
+  position: relative;
+}
+
+.product-card::after {
+  content: 'AI效果图';
+  position: absolute;
+  bottom: 12px;
+  left: 20px;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 4px;
+  border-radius: 2px;
+  pointer-events: none;
 }
 
 .product-info {
@@ -537,14 +556,9 @@ body {
 }
 
 .product-price {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-.product-price::before {
-  content: '¥';
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
 /* Product Detail Modal */
@@ -596,6 +610,25 @@ body {
   object-fit: cover;
 }
 
+/* Modal image watermark */
+.modal-content {
+  position: relative;
+}
+
+.modal-content::before {
+  content: 'AI生成效果展示';
+  position: absolute;
+  top: 220px;
+  right: 10px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 3px 8px;
+  border-radius: 3px;
+  z-index: 10;
+  pointer-events: none;
+}
+
 .modal-body {
   padding: var(--spacing-lg);
 }
@@ -614,14 +647,9 @@ body {
 }
 
 .modal-price {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-.modal-price::before {
-  content: '¥';
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
 .modal-close {
