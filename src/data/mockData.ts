@@ -28,21 +28,15 @@ export interface Category {
     icon?: string;
 }
 
+// Get base URL for assets (works with GitHub Pages subpath)
+const BASE_URL = import.meta.env.BASE_URL;
+
 // Store Information
 export const storeInfo: StoreInfo = {
     name: '绍兴黄酒专卖',
     phone: '15936229925',
-    qrCodeUrl: 'data:image/svg+xml,' + encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-      <rect fill="white" width="100" height="100"/>
-      <text x="50" y="45" text-anchor="middle" font-size="10" fill="#8B4513">扫码关注</text>
-      <text x="50" y="60" text-anchor="middle" font-size="8" fill="#666">公众号</text>
-    </svg>
-  `)
+    qrCodeUrl: `${BASE_URL}images/qrcode.jpg`
 };
-
-// Get base URL for assets (works with GitHub Pages subpath)
-const BASE_URL = import.meta.env.BASE_URL;
 
 // Media playlist - videos and images for the ad display
 export const mediaPlaylist: MediaItem[] = [
