@@ -59,17 +59,17 @@ export const mediaPlaylist: MediaItem[] = [
         title: '古越龙山 - 传统酿造',
         duration: 5000
     },
-    // 会稀山系列
+    // 会稽山系列
     {
         type: 'image',
         url: `${BASE_URL}images/brands/kuaijishan_scenery.png`,
-        title: '会稀山 - 山水意境',
+        title: '会稽山 - 山水意境',
         duration: 5000
     },
     {
         type: 'image',
         url: `${BASE_URL}images/brands/kuaijishan_cellar.png`,
-        title: '会稀山 - 280年传承',
+        title: '会稽山 - 280年传承',
         duration: 5000
     },
     // 女儿红系列

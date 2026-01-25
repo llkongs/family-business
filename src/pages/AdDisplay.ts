@@ -57,7 +57,7 @@ export class AdDisplay {
           <!-- Brand Indicators -->
           <div class="brand-indicators">
             <span class="brand-tag active" data-brand="guyuelongshan">古越龙山</span>
-            <span class="brand-tag" data-brand="kuaijishan">会稀山</span>
+            <span class="brand-tag" data-brand="kuaijishan">会稽山</span>
             <span class="brand-tag" data-brand="nverhong">女儿红</span>
           </div>
         </div>
@@ -169,7 +169,7 @@ export class AdDisplay {
       dot.classList.toggle('active', i === this.carouselIndex);
     });
 
-    // Update brand indicators (0-1: 古越龙山, 2-3: 会稀山, 4-5: 女儿红)
+    // Update brand indicators (0-1: 古越龙山, 2-3: 会稽山, 4-5: 女儿红)
     const brandIndex = Math.floor(this.carouselIndex / 2);
     brandTags.forEach((tag, i) => {
       tag.classList.toggle('active', i === brandIndex);
