@@ -42,6 +42,10 @@ export class AdDisplay {
             </div>
           </div>
           
+          <!-- Navigation Arrows -->
+          <button class="carousel-arrow carousel-arrow-left" id="carousel-prev">‹</button>
+          <button class="carousel-arrow carousel-arrow-right" id="carousel-next">›</button>
+          
           <!-- Navigation Dots -->
           <div class="carousel-dots" id="carousel-dots">
             ${images.map((_, i) => `
@@ -86,6 +90,23 @@ export class AdDisplay {
         const index = parseInt((dot as HTMLElement).dataset.index || '0');
         this.goToSlide(index);
       });
+    });
+
+    // Arrow navigation
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    const totalSlides = mediaPlaylist.filter(m => m.type === 'image').length;
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newIndex = (this.carouselIndex - 1 + totalSlides) % totalSlides;
+      this.goToSlide(newIndex);
+    });
+
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newIndex = (this.carouselIndex + 1) % totalSlides;
+      this.goToSlide(newIndex);
     });
 
     // Touch swipe support
