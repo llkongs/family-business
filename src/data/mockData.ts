@@ -31,7 +31,7 @@ export interface Category {
 // Store Information
 export const storeInfo: StoreInfo = {
     name: '绍兴黄酒专卖',
-    phone: '0575-8888-8888',
+    phone: '15936229925',
     qrCodeUrl: 'data:image/svg+xml,' + encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
       <rect fill="white" width="100" height="100"/>
