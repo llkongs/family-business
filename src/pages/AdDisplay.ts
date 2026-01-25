@@ -79,15 +79,6 @@ export class AdDisplay {
       this.onEnterMenu();
     });
 
-    // Click on carousel area (except button)
-    mainCarousel?.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.id !== 'enter-menu-btn' && !target.classList.contains('carousel-dot')) {
-        this.cleanup();
-        this.onEnterMenu();
-      }
-    });
-
     // Dots click
     dots.forEach(dot => {
       dot.addEventListener('click', (e) => {
