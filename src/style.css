@@ -144,39 +144,24 @@ body {
   background: var(--color-rice-paper);
 }
 
-/* Header Bar */
+/* Header Bar — grid: left 58% brand, right 42% QR */
 .header-bar {
   height: 18%;
-  padding: 2.5vh 3vh;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 58% 42%;
   background: var(--color-amber-dark);
   color: var(--color-text-light);
   flex-shrink: 0;
-  border-bottom: 2px solid var(--color-gold);
+  border-bottom: 1px solid rgba(200, 155, 60, 0.42);
   position: relative;
   overflow: hidden;
 }
 
-.header-bar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='%23C8AA6E' stroke-width='0.5'/%3E%3C/svg%3E");
-  background-size: 40px 40px;
-  opacity: 0.3;
-  pointer-events: none;
-}
-
 .store-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.8vh;
+  padding: 2vh 2.2vh;
+  display: grid;
+  align-content: center;
+  gap: 0.7vh;
   z-index: 1;
 }
 
@@ -191,8 +176,9 @@ body {
 .store-name {
   font-family: var(--font-serif);
   font-size: 3.5vh;
-  font-weight: 900;
-  letter-spacing: 2px;
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -200,9 +186,9 @@ body {
   margin: 0;
   display: inline-flex;
   align-items: baseline;
-  gap: 1vh;
+  gap: 0.6vh;
   color: var(--color-text-light);
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .phone-tag {
@@ -217,35 +203,32 @@ body {
 }
 
 .header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1vh;
+  border-left: 1px solid rgba(200, 155, 60, 0.3);
+  padding: 1.5vh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.6vh;
   z-index: 1;
-  align-self: stretch;
 }
 
 .qr-code {
-  flex: 1;
+  width: 80%;
   aspect-ratio: 1;
-  min-height: 0;
   background: white;
-  border-radius: 4px;
-  padding: 4px;
-  border: 1px solid var(--color-gold);
+  border-radius: 0.4vh;
+  padding: 0.7vh;
+  box-shadow: 0 0.3vh 1vh rgba(0, 0, 0, 0.24);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
 }
 
 .qr-caption {
   margin: 0;
   color: #d3c6ac;
-  font-size: 1.2vh;
+  font-size: 1.1vh;
   letter-spacing: 0.04em;
-  flex-shrink: 0;
 }
 
 .qr-code img {
@@ -502,16 +485,29 @@ body {
    Targets the store's 55-inch vertical 4K screen.
    ============================================ */
 @media (min-height: 1800px) and (orientation: portrait) {
-  .store-name {
-    font-size: min(100px, 4.6vw);
+  .store-eyebrow {
+    font-size: min(24px, 1.1vw);
   }
 
-  .store-phone {
-    font-size: min(78px, 3.6vw);
+  .store-name {
+    font-size: min(108px, 5vw);
+  }
+
+  .phone-tag {
+    font-size: min(42px, 1.9vw);
+  }
+
+  .phone-num {
+    font-size: min(70px, 3.2vw);
   }
 
   .qr-code {
-    padding: 32px;
+    padding: 28px;
+    border-radius: 16px;
+  }
+
+  .qr-caption {
+    font-size: min(34px, 1.6vw);
   }
 
   .ticker-item {
