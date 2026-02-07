@@ -302,9 +302,6 @@ export class AdDisplay {
     const dots = document.querySelectorAll('.carousel-dot');
     const slides = document.querySelectorAll('.carousel-slide');
 
-    if (track) {
-      track.style.transform = `translateX(-${this.carouselIndex * 100}%)`;
-    }
     slides.forEach((slide, i) => {
       slide.classList.toggle('active', i === this.carouselIndex);
     });

@@ -356,16 +356,20 @@ body {
 }
 
 .carousel-track {
-  display: flex;
+  position: relative;
   height: 100%;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .carousel-slide {
-  min-width: 100%;
-  height: 100%;
-  position: relative;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 800ms ease;
   overflow: hidden;
+}
+
+.carousel-slide.active {
+  opacity: 1;
 }
 
 /* Slide gradient overlay */
