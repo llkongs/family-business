@@ -46,6 +46,11 @@ pub fn generate_mock_data_ts(data: &MockData) -> Result<String> {
     writeln!(out, "}}")?;
     writeln!(out)?;
 
+    writeln!(out, "export interface Slogan {{")?;
+    writeln!(out, "    text: string;")?;
+    writeln!(out, "}}")?;
+    writeln!(out)?;
+
     // BASE_URL
     writeln!(
         out,
@@ -106,6 +111,15 @@ pub fn generate_mock_data_ts(data: &MockData) -> Result<String> {
             ts_string(&cat.name),
             icon_part
         )?;
+    }
+    writeln!(out, "];")?;
+    writeln!(out)?;
+
+    // Slogans
+    writeln!(out, "// Slogans - 滚动标语")?;
+    writeln!(out, "export const slogans: Slogan[] = [")?;
+    for slogan in &data.slogans {
+        writeln!(out, "    {{ text: {} }},", ts_string(&slogan.text))?;
     }
     writeln!(out, "];")?;
     writeln!(out)?;

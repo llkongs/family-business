@@ -41,6 +41,13 @@ pub struct MockProduct {
     pub category_id: String,
 }
 
+/// Ticker slogan (matches mockData.ts Slogan)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Slogan {
+    pub text: String,
+    pub sort_order: i32,
+}
+
 /// All mock data combined
 #[derive(Debug, Clone)]
 pub struct MockData {
@@ -48,4 +55,5 @@ pub struct MockData {
     pub media_playlist: Vec<MediaItem>,
     pub categories: Vec<DisplayCategory>,
     pub products: Vec<MockProduct>,
+    pub slogans: Vec<Slogan>,
 }

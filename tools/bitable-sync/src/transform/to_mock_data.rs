@@ -1,5 +1,5 @@
 use crate::models::bitable_records::RawProduct;
-use crate::models::mock_data::{DisplayCategory, MediaItem, MockData, MockProduct, StoreInfo};
+use crate::models::mock_data::{DisplayCategory, MediaItem, MockData, MockProduct, Slogan, StoreInfo};
 
 /// Build MockData from raw bitable records.
 ///
@@ -10,6 +10,7 @@ pub fn build_mock_data(
     display_categories: &[DisplayCategory],
     media_items: &[MediaItem],
     store_info: &StoreInfo,
+    slogans: &[Slogan],
 ) -> MockData {
     let mut mock_products: Vec<MockProduct> = Vec::new();
 
@@ -59,10 +60,15 @@ pub fn build_mock_data(
     let mut sorted_categories = display_categories.to_vec();
     sorted_categories.sort_by_key(|c| c.sort_order);
 
+    // Sort slogans
+    let mut sorted_slogans = slogans.to_vec();
+    sorted_slogans.sort_by_key(|s| s.sort_order);
+
     MockData {
         store_info: store_info.clone(),
         media_playlist: sorted_media,
         categories: sorted_categories,
         products: mock_products,
+        slogans: sorted_slogans,
     }
 }

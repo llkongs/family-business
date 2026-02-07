@@ -235,6 +235,21 @@ pub fn parse_store_info(
     })
 }
 
+/// Parse a bitable record into a Slogan (ticker text)
+pub fn parse_slogan(
+    fields: &HashMap<String, serde_json::Value>,
+) -> Result<super::mock_data::Slogan> {
+    let text = extract_text(fields, "标语内容").context("Slogan missing '标语内容'")?;
+    let enabled = extract_bool(fields, "启用");
+    if !enabled {
+        anyhow::bail!("Slogan disabled: {}", text);
+    }
+    Ok(super::mock_data::Slogan {
+        text,
+        sort_order: extract_number(fields, "排序").unwrap_or(0.0) as i32,
+    })
+}
+
 /// Intermediate product record before brand/category resolution
 pub struct RawProduct {
     pub id: String,

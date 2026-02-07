@@ -15,6 +15,9 @@ pub struct SyncOptions {
 
 pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
     let sync_start = std::time::Instant::now();
+    config
+        .validate()
+        .context("Config validation failed before sync")?;
 
     // 1. Initialize auth and client
     let auth = FeishuAuth::new(config.feishu_app_id.clone(), config.feishu_app_secret.clone());
@@ -22,6 +25,8 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
 
     // 2. Read all tables concurrently
     tracing::info!("Reading all tables from bitable...");
+    let has_slogans_table = !config.table_id_slogans.is_empty();
+
     let (products_raw, brands_raw, categories_raw, media_raw, store_raw) = tokio::try_join!(
         client.read_all_records(&config.table_id_products),
         client.read_all_records(&config.table_id_brands),
@@ -29,6 +34,13 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         client.read_all_records(&config.table_id_media),
         client.read_all_records(&config.table_id_store_info),
     )?;
+
+    let slogans_raw = if has_slogans_table {
+        client.read_all_records(&config.table_id_slogans).await?
+    } else {
+        tracing::warn!("TABLE_ID_SLOGANS not set, skipping slogans sync");
+        vec![]
+    };
 
     // 3. Parse records
     tracing::info!("Parsing records...");
@@ -56,6 +68,18 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         })
         .collect();
     tracing::info!("Parsed {} display categories", display_categories.len());
+
+    let slogans: Vec<_> = slogans_raw
+        .iter()
+        .filter_map(|r| match bitable_records::parse_slogan(&r.fields) {
+            Ok(s) => Some(s),
+            Err(e) => {
+                tracing::debug!("Skipping slogan record: {}", e);
+                None
+            }
+        })
+        .collect();
+    tracing::info!("Parsed {} active slogans", slogans.len());
 
     let raw_media_items: Vec<_> = media_raw
         .iter()
@@ -130,7 +154,7 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
 
     tracing::info!("Store info: {}", store_info.name);
 
-    let raw_products: Vec<_> = products_raw
+    let mut raw_products: Vec<_> = products_raw
         .iter()
         .filter_map(|r| match bitable_records::parse_raw_product(&r.fields) {
             Ok(p) => Some(p),
@@ -145,7 +169,7 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
     // T004: Download product images from Feishu attachments to public/images/products/
     if !opts.dry_run {
         let products_img_dir = config.public_dir().join("images").join("products");
-        for product in &raw_products {
+        for product in &mut raw_products {
             if let Some(ref token) = product.main_image_file_token {
                 let dest = products_img_dir.join(format!("{}.jpg", product.id));
                 if !dest.exists() {
@@ -161,6 +185,9 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
                             );
                         }
                     }
+                }
+                if dest.exists() {
+                    product.main_image = format!("images/products/{}.jpg", product.id);
                 }
             }
         }
@@ -192,6 +219,7 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         &display_categories,
         &media_items,
         &store_info,
+        &slogans,
     );
 
     // Summary
@@ -262,6 +290,7 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         categories = display_categories.len(),
         products = raw_products.len(),
         media = media_items.len(),
+        slogans = slogans.len(),
         store = store_info.name.as_str(),
         "Sync completed successfully"
     );

@@ -48,6 +48,12 @@ fn guide_records() -> Vec<serde_json::Value> {
             "填写说明": "只需要一行数据。二维码可直接上传图片附件（微信收款码等）。"
         }}),
         serde_json::json!({"fields": {
+            "表名": "标语表 Slogans",
+            "用途": "管理页面滚动标语/公告。每条标语一行。",
+            "必填字段": "标语内容",
+            "填写说明": "标语内容填写要展示的文字，可以包含emoji。排序数字越小越靠前。取消「启用」复选框可暂时隐藏某条标语。"
+        }}),
+        serde_json::json!({"fields": {
             "表名": "⚠️ 注意事项",
             "用途": "数据会自动同步到网站，请谨慎修改。",
             "必填字段": "—",
@@ -147,7 +153,18 @@ fn define_schemas() -> Vec<TableSchema> {
             ],
             links: vec![],
         },
-        // [5] 使用说明 Guide (not synced, for human reference)
+        // [5] 标语表 Slogans
+        TableSchema {
+            name: "标语表 Slogans",
+            view_name: "全部标语",
+            fields: vec![
+                FieldDef::text("标语内容"),
+                FieldDef::number("排序", "0"),
+                FieldDef::checkbox("启用"),
+            ],
+            links: vec![],
+        },
+        // [6] 使用说明 Guide (not synced, for human reference)
         TableSchema {
             name: "使用说明 Guide",
             view_name: "使用说明",
@@ -182,7 +199,7 @@ pub async fn setup_tables(config: &Config) -> Result<()> {
     }
 
     // Step 2: Populate guide table with instructions
-    let guide_table_id = &table_ids[5]; // index 5 = 使用说明
+    let guide_table_id = &table_ids[6]; // index 6 = 使用说明
     let records = guide_records();
     client
         .batch_create_records(guide_table_id, &records)
@@ -217,11 +234,44 @@ pub async fn setup_tables(config: &Config) -> Result<()> {
         "TABLE_ID_PRODUCTS",
         "TABLE_ID_MEDIA",
         "TABLE_ID_STORE_INFO",
+        "TABLE_ID_SLOGANS",
     ];
     for (key, id) in env_keys.iter().zip(table_ids.iter()) {
         println!("{}={}", key, id);
     }
 
-    println!("\nNote: The order is Brands, Display Categories, Products, Media, Store Info");
+    println!("\nNote: The order is Brands, Display Categories, Products, Media, Store Info, Slogans");
+    Ok(())
+}
+
+/// Create only the slogans table (non-destructive, for adding to an existing bitable app).
+pub async fn create_slogans_table(config: &Config) -> Result<()> {
+    let auth = FeishuAuth::new(config.feishu_app_id.clone(), config.feishu_app_secret.clone());
+    let client = BitableClient::new(auth, config.bitable_app_token.clone());
+
+    let fields = vec![
+        FieldDef::text("标语内容"),
+        FieldDef::number("排序", "0"),
+        FieldDef::checkbox("启用"),
+    ];
+
+    let table_id = client
+        .create_table("标语表 Slogans", "全部标语", &fields)
+        .await?;
+
+    // Pre-populate with sample slogans
+    let sample_records = vec![
+        serde_json::json!({"fields": {"标语内容": "🎉 欢迎光临伟盛酒业，绍兴黄酒正宗产地直供", "排序": 1, "启用": true}}),
+        serde_json::json!({"fields": {"标语内容": "🔥 近期促销：古越龙山五年陈花雕酒买二送一", "排序": 2, "启用": true}}),
+        serde_json::json!({"fields": {"标语内容": "🎁 婚宴用酒批发优惠，欢迎进店咨询", "排序": 3, "启用": true}}),
+        serde_json::json!({"fields": {"标语内容": "🏺 古法酒藏，经典传承，品质保证", "排序": 4, "启用": true}}),
+        serde_json::json!({"fields": {"标语内容": "📦 支持整箱购买，免费送货上门", "排序": 5, "启用": true}}),
+    ];
+    client.batch_create_records(&table_id, &sample_records).await?;
+    tracing::info!("Pre-populated slogans table with {} sample records", sample_records.len());
+
+    println!("\nSlogans table created successfully!");
+    println!("TABLE_ID_SLOGANS={}", table_id);
+    println!("\nAdd this to your .env.txt file.");
     Ok(())
 }

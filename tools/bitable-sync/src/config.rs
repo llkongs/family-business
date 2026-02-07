@@ -11,6 +11,7 @@ pub struct Config {
     pub table_id_display_categories: String,
     pub table_id_media: String,
     pub table_id_store_info: String,
+    pub table_id_slogans: String,
     /// Root of the family-business repo (auto-detected from binary location)
     pub repo_root: PathBuf,
 }
@@ -52,6 +53,8 @@ impl Config {
                 .context("TABLE_ID_MEDIA not set")?,
             table_id_store_info: std::env::var("TABLE_ID_STORE_INFO")
                 .context("TABLE_ID_STORE_INFO not set")?,
+            table_id_slogans: std::env::var("TABLE_ID_SLOGANS")
+                .unwrap_or_default(),
             repo_root,
         })
     }

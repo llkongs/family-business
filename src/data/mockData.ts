@@ -29,6 +29,10 @@ export interface Category {
     icon?: string;
 }
 
+export interface Slogan {
+    text: string;
+}
+
 // Get base URL for assets (works with GitHub Pages subpath)
 const BASE_URL = import.meta.env.BASE_URL;
 
@@ -74,6 +78,15 @@ export const categories: Category[] = [
     { id: 'nverhong', name: '女儿红', icon: '🎀' },
     { id: 'gift', name: '礼盒装', icon: '🎁' },
     { id: 'bulk', name: '坛装酒', icon: '🫙' },
+];
+
+// Slogans - 滚动标语
+export const slogans: Slogan[] = [
+    { text: '🎉 欢迎光临伟盛酒业，绍兴黄酒正宗产地直供' },
+    { text: '🔥 近期促销：古越龙山五年陈花雕酒买二送一' },
+    { text: '🎁 婚宴用酒批发优惠，欢迎进店咨询' },
+    { text: '🏺 古法酒藏，经典传承，品质保证' },
+    { text: '📦 支持整箱购买，免费送货上门' },
 ];
 
 // Products - 黄酒商品

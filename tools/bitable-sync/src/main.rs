@@ -37,8 +37,11 @@ enum Commands {
     /// Verify configuration and connectivity
     Check,
 
-    /// Create all 5 tables in bitable from scratch (destructive!)
+    /// Create all tables in bitable from scratch (destructive!)
     Setup,
+
+    /// Add the slogans table to an existing bitable app (non-destructive)
+    AddSlogansTable,
 }
 
 #[tokio::main]
@@ -51,6 +54,7 @@ async fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Sync { dry_run, no_push } => {
+            config.validate()?;
             let opts = sync::SyncOptions { dry_run, no_push };
             sync::run_sync(&config, &opts).await?;
         }
@@ -62,6 +66,9 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::Setup => {
             setup::setup_tables(&config).await?;
+        }
+        Commands::AddSlogansTable => {
+            setup::create_slogans_table(&config).await?;
         }
     }
 
