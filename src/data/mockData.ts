@@ -68,10 +68,96 @@ export const mediaPlaylist: MediaItem[] = [
 
 // Categories - 黄酒分类
 export const categories: Category[] = [
+    { id: 'hot', name: '热销推荐', icon: '🔥' },
+    { id: 'huadiao', name: '花雕酒', icon: '🏺' },
+    { id: 'jiafan', name: '加饭酒', icon: '🍚' },
+    { id: 'nverhong', name: '女儿红', icon: '🎀' },
+    { id: 'gift', name: '礼盒装', icon: '🎁' },
+    { id: 'bulk', name: '坛装酒', icon: '🫙' },
 ];
 
 // Products - 黄酒商品
 export const products: Product[] = [
+    {
+        id: 'P001',
+        categoryId: 'hot',
+        name: '古越龙山五年陈花雕酒',
+        description: '五年陈酿，国宴品质。采用鉴湖水酿造，酒体醇厚，口感绵柔，回味悠长。',
+        price: 68,
+        image: `${BASE_URL}images/products/gyl_huadiao_5y.png`,
+    },
+    {
+        id: 'P002',
+        categoryId: 'hot',
+        name: '古越龙山十年陈花雕酒',
+        description: '十年窖藏，臻选佳酿。历经十年窖藏，酒体更加醇厚圆润，是宴请宾客的上佳之选。',
+        price: 128,
+        image: `${BASE_URL}images/products/gyl_huadiao_10y.png`,
+    },
+    {
+        id: 'P006',
+        categoryId: 'hot',
+        name: '女儿红十八年陈酿',
+        description: '十八年珍藏，婚嫁佳酿。源于绍兴传统习俗，酒体醇厚，口感绵柔，香气优雅。',
+        price: 288,
+        image: `${BASE_URL}images/products/neh_18y.png`,
+    },
+    {
+        id: 'P003',
+        categoryId: 'huadiao',
+        name: '古越龙山国酿1959',
+        description: '国宴专用，珍藏臻品。以国宴标准酿制，代表中国黄酒最高水平，曾作为国宴用酒招待多国元首。',
+        price: 598,
+        image: `${BASE_URL}images/products/gyl_guonian_1959.png`,
+    },
+    {
+        id: 'P005',
+        categoryId: 'huadiao',
+        name: '会稽山1743典雅',
+        description: '始于1743，典雅传承。以1743年创立之年命名，代表会稽山最高酿造水平。酒香馥郁，口感细腻。',
+        price: 198,
+        image: `${BASE_URL}images/products/kjs_1743.png`,
+    },
+    {
+        id: 'P004',
+        categoryId: 'jiafan',
+        name: '会稽山五年陈加饭酒',
+        description: '280年传承，经典加饭。传承280年古法酿造技艺，以鉴湖水酿制，酒体饱满，口感醇和。',
+        price: 58,
+        image: `${BASE_URL}images/products/kjs_jiafan_5y.png`,
+    },
+    {
+        id: 'P007',
+        categoryId: 'nverhong',
+        name: '女儿红婚嫁礼盒装',
+        description: '婚嫁专用礼盒，双瓶装。包含两瓶十八年陈酿，配精美礼盒，是婚宴及馈赠的最佳选择。',
+        price: 688,
+        image: `${BASE_URL}images/products/neh_wedding_gift.png`,
+    },
+    {
+        id: 'P007-gift',
+        categoryId: 'gift',
+        name: '女儿红婚嫁礼盒装',
+        description: '婚嫁专用礼盒，双瓶装。包含两瓶十八年陈酿，配精美礼盒，是婚宴及馈赠的最佳选择。',
+        price: 688,
+        image: `${BASE_URL}images/products/neh_wedding_gift.png`,
+    },
+    {
+        id: 'P003-gift',
+        categoryId: 'gift',
+        name: '古越龙山国酿1959礼盒',
+        description: '国宴专用，珍藏臻品。豪华礼盒包装，适合馈赠贵宾与珍藏。',
+        price: 598,
+        image: `${BASE_URL}images/products/gyl_guonian_1959.png`,
+    },
+    {
+        id: 'P008',
+        categoryId: 'bulk',
+        name: '古越龙山花雕酒坛装 2.5L',
+        description: '传统坛装，家庭分享。采用传统陶坛封装，保留古法酿酒风味，适合家庭聚会分享。',
+        price: 268,
+        image: `${BASE_URL}images/products/gyl_tan_2.5l.png`,
+    },
 ];
 
 // Helper function to get products by category
