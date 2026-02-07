@@ -234,3 +234,186 @@ bash tools/validate-data.sh → PASSED (1 warning: productDatabase.json logo)
 | `tools/bitable-sync/src/output/ts_writer.rs` | Slogan 接口 + slogans export + ts_url |
 | `tools/bitable-sync/src/git.rs` | git add -A 目录级暂存 |
 | `tools/bitable-sync/src/video.rs` | download_image_attachment + 图片媒体下载 |
+
+---
+
+### 六、commit `2b12c84` — chore: sync bitable data (slogans + media images)
+
+首次成功的 bitable-sync 全量同步。
+
+- 从飞书标语表读取 3 条记录，2 条启用 → 写入 mockData.ts
+- 下载 7 张媒体图片到 `public/images/media/`（1 张因 I/O 错误跳过）
+- 刷新 QR 码图片
+- 媒体表从旧的 `images/brands/` 路径更新为 `images/media/` 路径（飞书附件下载）
+
+**遇到的问题和解决：**
+1. 首次 sync 时 `.git/HEAD.lock` 存在 → commit 失败 → `rm HEAD.lock` 后重试
+2. `git reset --hard origin/main` 导致 detached HEAD → sync 内部 commit 成功但 push 失败 → `git checkout -B main HEAD` 修复
+
+---
+
+## 数据同步 Pipeline 操作手册
+
+> **本节是操作参考文档，描述 bitable-sync 的完整工作流程、手动操作步骤、常见故障排除。**
+
+### 1. 架构总览
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌──────────┐     ┌──────────────┐     ┌─────────────┐
+│  飞书多维表格  │ ──→ │  bitable-sync    │ ──→ │   Git    │ ──→ │ GitHub Actions│ ──→ │ GitHub Pages│
+│  (数据源)     │     │  (Rust CLI 工具)  │     │  (版本控制)│     │  (CI/CD)      │     │  (线上网站)  │
+└─────────────┘     └──────────────────┘     └──────────┘     └──────────────┘     └─────────────┘
+```
+
+**关键原则：前端网站是纯静态的，不会也不能调用飞书 API。所有数据必须经过 bitable-sync 落地为本地文件后，通过 Git 推送到 GitHub Pages。**
+
+### 2. 飞书表 → 本地文件 映射关系
+
+| 飞书表名 | TABLE_ID | 输出目标 | 说明 |
+|---------|----------|---------|------|
+| 商品表 Products | `tblUuUZhQ0ekJdwm` | `mockData.ts` → `products[]` | 商品信息 |
+| 品牌表 Brands | `tbl5nDX5FiOVnQOt` | `productDatabase.json` | 品牌元数据 |
+| 分类表 DisplayCategories | `tblcouMl9exgOZnA` | `mockData.ts` → `categories[]` | 展示分类 |
+| 媒体表 Media | `tbln9TcNFR81QaJO` | `mockData.ts` → `mediaPlaylist[]` + `public/images/media/` + `public/videos/` | 视频/图片 |
+| 店铺信息 StoreInfo | `tblKJQ4Wo1wxwHA7` | `mockData.ts` → `storeInfo` + `public/images/qrcode.jpg` | 店铺名/电话/二维码 |
+| 标语表 Slogans | `tbl7wZu8zLY6tHp3` | `mockData.ts` → `slogans[]` | 滚动标语（启用=true 的才同步） |
+
+### 3. 手动同步操作步骤
+
+#### 正常流程（一条命令搞定）
+
+```bash
+cd /Volumes/alidrive/pm1733/Tools/family-business/tools/bitable-sync
+~/.local/bin/bitable-sync sync
+```
+
+sync 命令内部自动完成：
+1. 读取 `.env.txt` 获取飞书凭证和表 ID
+2. 并发读取 6 张飞书表的全部记录
+3. 解析记录 → 下载附件（图片/视频）→ 转换数据
+4. 写入 `src/data/mockData.ts` 和 `src/data/productDatabase.json`
+5. `git add` + `git commit` + `git push`
+6. GitHub Actions 自动触发构建和部署
+
+#### 验证同步结果
+
+```bash
+# 1. 检查 mockData.ts 标语是否更新
+grep -A5 "export const slogans" src/data/mockData.ts
+
+# 2. 检查 git 状态
+git log --oneline -3
+
+# 3. 检查 GitHub Actions 构建状态
+gh run list --limit 1
+```
+
+### 4. 常见故障排除
+
+#### 故障 A：`.git/HEAD.lock` 导致 commit 失败
+
+**现象：**
+```
+fatal: cannot lock ref 'HEAD': Unable to create '.git/HEAD.lock': File exists.
+```
+
+**原因：** 外置硬盘文件系统问题，git 进程异常退出后 lock 文件残留。
+
+**解决：**
+```bash
+rm /Volumes/alidrive/pm1733/Tools/family-business/.git/HEAD.lock
+# 然后重新运行 sync
+~/.local/bin/bitable-sync sync
+```
+
+#### 故障 B：detached HEAD 导致 push 失败
+
+**现象：**
+```
+fatal: You are not currently on a branch.
+```
+
+**原因：** `git reset --hard` 或 rebase 中断后处于游离 HEAD 状态。
+
+**解决：**
+```bash
+git checkout -B main HEAD
+git push
+```
+
+#### 故障 C：push rejected（远程领先）
+
+**现象：**
+```
+! [rejected] main -> main (fetch first)
+```
+
+**原因：** 远程有本地没有的提交（通常是之前通过 /tmp 中转推送的）。
+
+**解决：**
+```bash
+git stash --include-untracked
+git pull --rebase
+git stash pop
+# 如果有冲突，解决后：
+git add . && git rebase --continue
+```
+
+#### 故障 D：外置硬盘 I/O 错误
+
+**现象：**
+```
+Failed to download media image: Input/output error (os error 5)
+```
+
+**原因：** 外置硬盘文件系统间歇性故障。
+
+**解决：** 通常重试即可。如果持续出错：
+```bash
+# 检查硬盘状态
+diskutil info /Volumes/alidrive | grep "File System"
+# 如果需要，用 /tmp 中转：
+rsync -a /Volumes/alidrive/pm1733/Tools/family-business/ /tmp/fb-build/ --exclude node_modules
+cd /tmp/fb-build/tools/bitable-sync && ~/.local/bin/bitable-sync sync
+```
+
+#### 故障 E：飞书 token 过期
+
+**现象：**
+```
+Error: Failed to get tenant_access_token
+```
+
+**解决：** 检查 `.env.txt` 中 `FEISHU_APP_ID` 和 `FEISHU_APP_SECRET` 是否正确。token 由程序自动获取和刷新，不需要手动管理。
+
+### 5. Rust 工具重新编译
+
+如果修改了 bitable-sync 源码，需要重新编译并安装：
+
+```bash
+cd /Volumes/alidrive/pm1733/Tools/family-business/tools/bitable-sync
+CARGO_TARGET_DIR=/tmp/bitable-sync-target source "$HOME/.cargo/env" && cargo build --release
+cp /tmp/bitable-sync-target/release/bitable-sync ~/.local/bin/
+```
+
+**注意：** 必须用 `CARGO_TARGET_DIR=/tmp/bitable-sync-target`，因为外置硬盘不支持 Cargo 的 target 目录（文件系统锁问题）。
+
+### 6. launchd 自动同步（待配置）
+
+plist 文件位于 `~/Library/LaunchAgents/com.leonkong.bitable-sync.plist`。
+
+**当前状态：** 未启用（无 StartInterval，RunAtLoad=false）。
+
+**启用方法：**
+```bash
+# 加载到 launchd
+launchctl load ~/Library/LaunchAgents/com.leonkong.bitable-sync.plist
+
+# 手动触发一次
+launchctl start com.leonkong.bitable-sync
+
+# 检查日志
+tail -f /tmp/bitable-sync.stderr.log
+```
+
+**注意：** plist 中 `WorkingDirectory` 当前指向 `/Volumes/alidrive/pm1733/Tools/bitable-sync`，需要修正为 `/Volumes/alidrive/pm1733/Tools/family-business/tools/bitable-sync`。且需要添加 `StartInterval`（如 3600 = 每小时同步一次）才能自动运行。
