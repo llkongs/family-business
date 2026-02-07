@@ -141,7 +141,7 @@ body {
 /* Header Bar */
 .header-bar {
   height: 18%;
-  padding: 0 3vh;
+  padding: 2.5vh 3vh;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -201,15 +201,16 @@ body {
 }
 
 .qr-code {
-  height: 60%;
+  height: 100%;
   aspect-ratio: 1;
   background: white;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   padding: 4px;
   border: 1px solid var(--color-gold);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .qr-code img {
