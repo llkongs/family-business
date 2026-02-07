@@ -105,6 +105,7 @@ export class AdDisplay {
                     <img src="${esc(safeUrlValue(img.url))}" alt="${esc(img.title || '')}" />
                     ${img.title ? `<div class="carousel-caption">
                       <div class="carousel-caption-title">${esc(img.title)}</div>
+                      ${img.description ? `<p class="carousel-caption-desc">${esc(img.description)}</p>` : ''}
                     </div>` : ''}
                   </div>
                 `).join('')}
