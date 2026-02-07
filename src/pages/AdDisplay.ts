@@ -47,6 +47,14 @@ export class AdDisplay {
     this.startCarousel();
   }
 
+  private formatPhone(phone: string): string {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 11) {
+      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    }
+    return phone;
+  }
+
   private render(): void {
     const hasImages = this.images.length > 0;
     const showCta = this.onEnterMenu !== null;
@@ -56,13 +64,18 @@ export class AdDisplay {
         <!-- Header Bar -->
         <div class="header-bar">
           <div class="store-info">
+            <p class="store-eyebrow">SHAOXING HUANGJIU</p>
             <span class="store-name">${esc(storeInfo.name)}</span>
-            <span class="store-phone">${esc(storeInfo.phone)}</span>
+            <p class="store-phone">
+              <span class="phone-tag">服务热线</span>
+              <strong class="phone-num">${esc(this.formatPhone(storeInfo.phone))}</strong>
+            </p>
           </div>
           <div class="header-right">
             <div class="qr-code">
               <img src="${esc(safeUrlValue(storeInfo.qrCodeUrl))}" alt="QR Code" />
             </div>
+            <p class="qr-caption">扫码咨询</p>
           </div>
         </div>
 

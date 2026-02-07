@@ -175,8 +175,17 @@ body {
 .store-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5vh;
+  justify-content: center;
+  gap: 0.8vh;
   z-index: 1;
+}
+
+.store-eyebrow {
+  margin: 0;
+  color: #c9b694;
+  font-size: 1.2vh;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
 
 .store-name {
@@ -188,28 +197,39 @@ body {
 }
 
 .store-phone {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.8vh;
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1vh;
+  color: var(--color-text-light);
   opacity: 0.9;
 }
 
-.store-phone::before {
-  content: '📞';
+.phone-tag {
+  font-size: 1.4vh;
+  letter-spacing: 0.04em;
+}
+
+.phone-num {
+  font-size: 2.2vh;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .header-right {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
+  justify-content: center;
+  gap: 1vh;
   z-index: 1;
   align-self: stretch;
 }
 
 .qr-code {
-  height: 100%;
+  flex: 1;
   aspect-ratio: 1;
+  min-height: 0;
   background: white;
   border-radius: 4px;
   padding: 4px;
@@ -218,6 +238,14 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1;
+}
+
+.qr-caption {
+  margin: 0;
+  color: #d3c6ac;
+  font-size: 1.2vh;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 
 .qr-code img {
