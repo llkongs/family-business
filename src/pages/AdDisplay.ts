@@ -56,7 +56,7 @@ export class AdDisplay {
         <!-- Header Bar -->
         <div class="header-bar">
           <div class="store-info">
-            <span class="store-name">\u{1F3FA} ${esc(storeInfo.name)}</span>
+            <span class="store-name">${esc(storeInfo.name)}</span>
             <span class="store-phone">${esc(storeInfo.phone)}</span>
           </div>
           <div class="header-right">
