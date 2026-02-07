@@ -198,6 +198,7 @@ body {
   align-items: center;
   gap: var(--spacing-md);
   z-index: 1;
+  align-self: stretch;
 }
 
 .qr-code {
