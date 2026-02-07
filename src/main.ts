@@ -1,8 +1,6 @@
 import './style.css';
 import { AdDisplay } from './pages/AdDisplay';
 import { ProductMenu } from './pages/ProductMenu';
-import { categories, products } from './data/mockData';
-
 type Page = 'ad' | 'menu' | 'password';
 
 // ⚠️ 注意：此密码仅为防误触门禁，不构成任何安全鉴权。
@@ -104,12 +102,9 @@ class App {
 
     switch (page) {
       case 'ad':
-        // T012: 只有在有商品数据时才传入菜单跳转回调
         this.adDisplay = new AdDisplay(
           this.container,
-          (categories.length > 0 && products.length > 0)
-            ? () => this.navigateTo('menu')
-            : null
+          () => this.navigateTo('menu')
         );
         break;
       case 'menu':
