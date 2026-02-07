@@ -468,35 +468,35 @@ google-chrome \
 说明：
 
 - `优先级`：P0 > P1 > P2。
-- `状态` 初始统一为 `TODO`。
+- `状态`：`DONE` = 已完成，`TODO` = 待办。
 - `验收标准` 为交付判断依据。
 
 | ID | 优先级 | 模块 | 任务 | 交付物 | 验收标准 | 依赖 | 状态 |
 |---|---|---|---|---|---|---|---|
-| T001 | P0 | 同步工具 | 修复 `BASE_URL + 绝对URL` 拼接问题 | `ts_writer.rs` 逻辑更新 | `qrCodeUrl/media/image` 对绝对 URL 不再拼接 base | 无 | TODO |
-| T002 | P0 | 同步工具 | 新增 URL 规范化函数 | 独立函数 + 单元测试 | 覆盖相对/绝对/空字符串场景 | T001 | TODO |
-| T003 | P0 | 同步工具 | 二维码附件下载到 `public/images/qrcode.*` | 同步流程新增下载逻辑 | 二维码在 GitHub Pages 长期可访问 | 无 | TODO |
-| T004 | P0 | 同步工具 | 商品主图附件下载到 `public/images/products/` | 图片下载器 + 路径映射 | 产品图不依赖飞书临时 URL | T003 | TODO |
-| T005 | P0 | 同步工具 | 媒体图片附件下载到 `public/images/brands/` 或 `public/images/media/` | 媒体处理增强 | 媒体表仅填附件也能正常展示 | T003 | TODO |
-| T006 | P0 | 前端 | `play()` 增加 `catch` 和回退策略 | `AdDisplay.ts` | 自动播放失败时可回退并继续播 | 无 | TODO |
-| T007 | P0 | 前端 | 增加 HLS 错误监听和恢复策略 | `AdDisplay.ts` | 网络/媒体错误不会永久卡死 | T006 | TODO |
-| T008 | P0 | 前端 | 增加视频 watchdog | `AdDisplay.ts` | `currentTime` 长时间不动会自动恢复 | T006 | TODO |
-| T009 | P0 | 同步工具 | 修复删除文件未提交问题 | `git.rs` 或 `sync.rs` 更新 | 删除旧分片后 git 状态干净 | 无 | TODO |
-| T010 | P0 | 安全 | 明确文档声明“前端密码非安全鉴权” | 文档与页面文案更新 | 评审不再误解为安全机制 | 无 | TODO |
-| T011 | P1 | 前端 | 改造门禁持久化 `sessionStorage -> localStorage` | `main.ts` | 设备重启浏览器后无需重复输入 | 无 | TODO |
-| T012 | P1 | 前端 | 移除底部按钮栏，改为图片区右下角悬浮 CTA | `AdDisplay.ts` + `style.css` | 无底栏占高；CTA 在图片区右下角且可点击 | 无 | TODO |
-| T013 | P1 | 前端 | 全局异常兜底 `onerror/unhandledrejection` | `main.ts` | 未捕获异常可触发恢复逻辑 | 无 | TODO |
-| T014 | P1 | 前端 | 增加定时自动刷新机制 | `main.ts` 或 `AdDisplay.ts` | 每 4-6 小时自动刷新一次 | T013 | TODO |
-| T015 | P1 | 前端 | 渲染层避免直接拼接不可信 HTML | `AdDisplay.ts`/`ProductMenu.ts` | 外部数据不会直接进入 `innerHTML` | 无 | TODO |
-| T016 | P1 | 前端 | 修正页面 title 与中文元信息 | `index.html` | 浏览器标题显示“伟盛酒业” | 无 | TODO |
-| T017 | P1 | 前端 | 大屏可读性与扫码可达性调整（含二维码尺寸） | `style.css` | 3-5 米可读，2 米扫码通过 | 无 | TODO |
-| T018 | P1 | 前端 | 现代化 CTA 样式与轻动效（替换 pulse） | `style.css` | CTA 视觉突出但无干扰性强闪烁 | 无 | TODO |
-| T019 | P1 | 同步工具 | 启动前 `repo_root` 强校验 | `config.rs/sync.rs` | 错目录执行会直接失败并报错 | 无 | TODO |
-| T020 | P1 | 同步工具 | 同步日志标准化（结构化关键字段） | `sync.rs` | 每次同步日志包含耗时/记录数/结果 | 无 | TODO |
+| T001 | P0 | 同步工具 | 修复 `BASE_URL + 绝对URL` 拼接问题 | `ts_writer.rs` 逻辑更新 | `qrCodeUrl/media/image` 对绝对 URL 不再拼接 base | 无 | DONE |
+| T002 | P0 | 同步工具 | 新增 URL 规范化函数 | 独立函数 + 单元测试 | 覆盖相对/绝对/空字符串场景 | T001 | DONE |
+| T003 | P0 | 同步工具 | 二维码附件下载到 `public/images/qrcode.*` | 同步流程新增下载逻辑 | 二维码在 GitHub Pages 长期可访问 | 无 | DONE |
+| T004 | P0 | 同步工具 | 商品主图附件下载到 `public/images/products/` | 图片下载器 + 路径映射 | 产品图不依赖飞书临时 URL | T003 | DONE |
+| T005 | P0 | 同步工具 | 媒体图片附件下载到 `public/images/brands/` 或 `public/images/media/` | 媒体处理增强 | 媒体表仅填附件也能正常展示 | T003 | DONE |
+| T006 | P0 | 前端 | `play()` 增加 `catch` 和回退策略 | `AdDisplay.ts` | 自动播放失败时可回退并继续播 | 无 | DONE |
+| T007 | P0 | 前端 | 增加 HLS 错误监听和恢复策略 | `AdDisplay.ts` | 网络/媒体错误不会永久卡死 | T006 | DONE |
+| T008 | P0 | 前端 | 增加视频 watchdog | `AdDisplay.ts` | `currentTime` 长时间不动会自动恢复 | T006 | DONE |
+| T009 | P0 | 同步工具 | 修复删除文件未提交问题 | `git.rs` 或 `sync.rs` 更新 | 删除旧分片后 git 状态干净 | 无 | DONE |
+| T010 | P0 | 安全 | 明确文档声明"前端密码非安全鉴权" | 文档与页面文案更新 | 评审不再误解为安全机制 | 无 | DONE |
+| T011 | P1 | 前端 | 改造门禁持久化 `sessionStorage -> localStorage` | `main.ts` | 设备重启浏览器后无需重复输入 | 无 | DONE |
+| T012 | P1 | 前端 | 移除底部按钮栏，改为图片区右下角悬浮 CTA | `AdDisplay.ts` + `style.css` | 无底栏占高；CTA 在图片区右下角且可点击 | 无 | DONE |
+| T013 | P1 | 前端 | 全局异常兜底 `onerror/unhandledrejection` | `main.ts` | 未捕获异常可触发恢复逻辑 | 无 | DONE |
+| T014 | P1 | 前端 | 增加定时自动刷新机制 | `main.ts` 或 `AdDisplay.ts` | 每 4-6 小时自动刷新一次 | T013 | DONE |
+| T015 | P1 | 前端 | 渲染层避免直接拼接不可信 HTML | `AdDisplay.ts`/`ProductMenu.ts` | 外部数据不会直接进入 `innerHTML` | 无 | DONE |
+| T016 | P1 | 前端 | 修正页面 title 与中文元信息 | `index.html` | 浏览器标题显示"伟盛酒业" | 无 | DONE |
+| T017 | P1 | 前端 | 大屏可读性与扫码可达性调整（含二维码尺寸） | `style.css` | 3-5 米可读，2 米扫码通过 | 无 | DONE |
+| T018 | P1 | 前端 | 现代化 CTA 样式与轻动效（替换 pulse） | `style.css` | CTA 视觉突出但无干扰性强闪烁 | 无 | DONE |
+| T019 | P1 | 同步工具 | 启动前 `repo_root` 强校验 | `config.rs/sync.rs` | 错目录执行会直接失败并报错 | 无 | DONE |
+| T020 | P1 | 同步工具 | 同步日志标准化（结构化关键字段） | `sync.rs` | 每次同步日志包含耗时/记录数/结果 | 无 | DONE |
 | T021 | P1 | 运维 | 增加 launchd 定时任务配置 | `docs/` + plist 模板 | Mac mini 重启后自动定时同步 | 无 | TODO |
 | T022 | P1 | 运维 | 同步失败告警脚本 | `tools/` 脚本 | 连续失败 N 次有通知 | T020 | TODO |
-| T023 | P1 | CI | 增加部署前数据完整性检查 | workflow + script | 缺失关键字段时阻断发布 | 无 | TODO |
-| T024 | P1 | CI | 增加最小前端 smoke test | workflow | 构建产物可加载关键页面 | 无 | TODO |
+| T023 | P1 | CI | 增加部署前数据完整性检查 | workflow + script | 缺失关键字段时阻断发布 | 无 | DONE |
+| T024 | P1 | CI | 增加最小前端 smoke test | workflow | 构建产物可加载关键页面 | 无 | DONE |
 | T025 | P1 | 数据 | 统一字段字典与命名规范 | `docs/` | 飞书字段变更有映射文档 | 无 | TODO |
 | T026 | P2 | 架构 | 媒体存储分层方案评估（Git vs 对象存储） | 评估文档 | 有容量上限与迁移结论 | 无 | TODO |
 | T027 | P2 | 架构 | 页面配置化（Header/Video/Image 占比与 CTA 位置可调） | 配置结构 | 无需改代码可调布局比例与 CTA 偏移 | 无 | TODO |
@@ -508,6 +508,7 @@ google-chrome \
 | T033 | P2 | 安全 | 评估接入 Cloudflare Access | 方案文档 | 给出成本、复杂度、收益结论 | 无 | TODO |
 | T034 | P2 | 质量 | 补充 bitable-sync 单元测试 | Rust tests | 核心转换逻辑覆盖率提升 | 无 | TODO |
 | T035 | P2 | 质量 | 前端 e2e 回归脚本（可选） | 测试脚本 | 视频切换/图片切换/页面跳转可自动验收 | 无 | TODO |
+| T036 | P1 | 同步工具 | 飞书标语表同步到前端 ticker | Slogan 模型 + 同步 + ts_writer | 飞书修改标语后同步即可更新网页滚动文字 | 无 | DONE |
 
 ---
 
