@@ -194,6 +194,40 @@ body {
   object-fit: contain;
 }
 
+/* Scrolling Ticker Bar */
+.ticker-bar {
+  width: 100%;
+  background: linear-gradient(to right, #1a0f0a, #2c1810);
+  overflow: hidden;
+  flex-shrink: 0;
+  padding: 6px 0;
+  border-top: 1px solid rgba(218, 165, 32, 0.3);
+  border-bottom: 1px solid rgba(218, 165, 32, 0.3);
+}
+
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.ticker-item {
+  flex-shrink: 0;
+  padding: 0 3em;
+  color: #DAA520;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* Video Section — 16:9 video on 9:16 vertical screen
    Full width = 100vw, height = 100vw * 9/16 ≈ 56.25vw
    That's roughly 30% of 1920px height */
@@ -384,6 +418,15 @@ body {
   .qr-code {
     height: calc(var(--header-height) - 40px);
     padding: 32px;
+  }
+
+  .ticker-bar {
+    padding: 12px 0;
+  }
+
+  .ticker-item {
+    font-size: min(48px, 2.2vw);
+    padding: 0 4vw;
   }
 
   .unmute-btn {

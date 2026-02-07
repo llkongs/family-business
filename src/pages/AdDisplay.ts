@@ -8,6 +8,21 @@ function esc(s: string): string {
   return el.innerHTML;
 }
 
+function safeUrlValue(url: string): string {
+  const raw = url.trim();
+  if (!raw) return '';
+  if (
+    raw.startsWith('http://') ||
+    raw.startsWith('https://') ||
+    raw.startsWith('/') ||
+    raw.startsWith('./') ||
+    raw.startsWith('../')
+  ) {
+    return raw;
+  }
+  return '';
+}
+
 export class AdDisplay {
   private container: HTMLElement;
   private onEnterMenu: (() => void) | null;
@@ -46,8 +61,24 @@ export class AdDisplay {
           </div>
           <div class="header-right">
             <div class="qr-code">
-              <img src="${storeInfo.qrCodeUrl}" alt="QR Code" />
+              <img src="${esc(safeUrlValue(storeInfo.qrCodeUrl))}" alt="QR Code" />
             </div>
+          </div>
+        </div>
+
+        <!-- Marquee Ticker -->
+        <div class="ticker-bar">
+          <div class="ticker-track">
+            <span class="ticker-item">\u{1F389} \u6B22\u8FCE\u5149\u4E34\u4F1F\u76DB\u9152\u4E1A\uFF0C\u7ECD\u5174\u9EC4\u9152\u6B63\u5B97\u4EA7\u5730\u76F4\u4F9B</span>
+            <span class="ticker-item">\u{1F525} \u8FD1\u671F\u4FC3\u9500\uFF1A\u53E4\u8D8A\u9F99\u5C71\u4E94\u5E74\u9648\u82B1\u96D5\u9152\u4E70\u4E8C\u9001\u4E00</span>
+            <span class="ticker-item">\u{1F381} \u5A5A\u5BB4\u7528\u9152\u6279\u53D1\u4F18\u60E0\uFF0C\u6B22\u8FCE\u8FDB\u5E97\u54A8\u8BE2</span>
+            <span class="ticker-item">\u{1F3FA} \u53E4\u6CD5\u9152\u85CF\uFF0C\u7ECF\u5178\u4F20\u627F\uFF0C\u54C1\u8D28\u4FDD\u8BC1</span>
+            <span class="ticker-item">\u{1F4E6} \u652F\u6301\u6574\u7BB1\u8D2D\u4E70\uFF0C\u514D\u8D39\u9001\u8D27\u4E0A\u95E8</span>
+            <span class="ticker-item">\u{1F389} \u6B22\u8FCE\u5149\u4E34\u4F1F\u76DB\u9152\u4E1A\uFF0C\u7ECD\u5174\u9EC4\u9152\u6B63\u5B97\u4EA7\u5730\u76F4\u4F9B</span>
+            <span class="ticker-item">\u{1F525} \u8FD1\u671F\u4FC3\u9500\uFF1A\u53E4\u8D8A\u9F99\u5C71\u4E94\u5E74\u9648\u82B1\u96D5\u9152\u4E70\u4E8C\u9001\u4E00</span>
+            <span class="ticker-item">\u{1F381} \u5A5A\u5BB4\u7528\u9152\u6279\u53D1\u4F18\u60E0\uFF0C\u6B22\u8FCE\u8FDB\u5E97\u54A8\u8BE2</span>
+            <span class="ticker-item">\u{1F3FA} \u53E4\u6CD5\u9152\u85CF\uFF0C\u7ECF\u5178\u4F20\u627F\uFF0C\u54C1\u8D28\u4FDD\u8BC1</span>
+            <span class="ticker-item">\u{1F4E6} \u652F\u6301\u6574\u7BB1\u8D2D\u4E70\uFF0C\u514D\u8D39\u9001\u8D27\u4E0A\u95E8</span>
           </div>
         </div>
 
@@ -64,7 +95,7 @@ export class AdDisplay {
               <div class="carousel-track" id="carousel-track">
                 ${this.images.map((img, i) => `
                   <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
-                    <img src="${img.url}" alt="${esc(img.title || '')}" />
+                    <img src="${esc(safeUrlValue(img.url))}" alt="${esc(img.title || '')}" />
                     ${img.title ? `<div class="slide-title">${esc(img.title)}</div>` : ''}
                   </div>
                 `).join('')}
@@ -135,6 +166,12 @@ export class AdDisplay {
   private loadVideo(index: number): void {
     if (!this.videoEl) return;
     const video = this.videos[index];
+    const source = safeUrlValue(video.url);
+    if (!source) {
+      console.error('[Video] Invalid source URL, skipping:', video.url);
+      this.skipToNextVideo();
+      return;
+    }
 
     this.lastCurrentTime = -1;
     this.stallCount = 0;
@@ -142,7 +179,7 @@ export class AdDisplay {
     // Safari native HLS
     if (this.videoEl.canPlayType('application/vnd.apple.mpegurl')) {
       this.destroyHls();
-      this.videoEl.src = video.url;
+      this.videoEl.src = source;
       this.tryPlay();
       return;
     }
@@ -154,7 +191,7 @@ export class AdDisplay {
         enableWorker: true,
         lowLatencyMode: false,
       });
-      this.hls.loadSource(video.url);
+      this.hls.loadSource(source);
       this.hls.attachMedia(this.videoEl);
 
       // T007: HLS error recovery
