@@ -36,7 +36,7 @@ const BASE_URL = import.meta.env.BASE_URL;
 export const storeInfo: StoreInfo = {
     name: '伟盛酒业',
     phone: '15936229925',
-    qrCodeUrl: `${BASE_URL}https://open.feishu.cn/open-apis/drive/v1/medias/batch_get_tmp_download_url?file_tokens=KkHqbJj5FoT4ScxxpNBc8P9jnNf`
+    qrCodeUrl: `${BASE_URL}images/qrcode.jpg`
 };
 
 // Media playlist - videos and images for the ad display
