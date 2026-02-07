@@ -83,18 +83,24 @@ body {
   font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--color-text-primary);
-  background: var(--color-background);
-  overflow-x: hidden;
+  background: #111;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
-  width: 100%;
   height: 100vh;
+  aspect-ratio: 9 / 16;
   max-width: 100vw;
   overflow: hidden;
   position: relative;
+  background: var(--color-rice-paper);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
 }
 
 /* Utility Classes */
