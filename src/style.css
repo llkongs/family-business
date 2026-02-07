@@ -55,10 +55,9 @@
   --transition-normal: 300ms ease;
   --transition-slow: 500ms ease;
 
-  /* Layout */
-  --header-height: 8vh;
-  --video-height: 62vh;
-  --carousel-height: 30vh;
+  /* Layout — vertical 9:16 screen (1080×1920) */
+  --header-height: 6vh;
+  --bottom-bar-height: 8vh;
 }
 
 /* Reset & Base */
@@ -150,11 +149,11 @@ body {
 .store-info {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .store-name {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
@@ -163,7 +162,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   background: rgba(255, 255, 255, 0.2);
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-full);
@@ -180,11 +179,11 @@ body {
 }
 
 .qr-code {
-  height: calc(var(--header-height) - 10px);
+  height: calc(var(--header-height) - 8px);
   aspect-ratio: 1;
   background: white;
   border-radius: var(--radius-sm);
-  padding: 4px;
+  padding: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,27 +195,13 @@ body {
   object-fit: contain;
 }
 
-.enter-menu-btn {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: linear-gradient(135deg, #DAA520, #B8860B);
-  color: white;
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.enter-menu-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 12px rgba(218, 165, 32, 0.5);
-}
-
-/* Video Section */
+/* Video Section — 16:9 video on 9:16 vertical screen
+   Full width = 100vw, height = 100vw * 9/16 ≈ 56.25vw
+   That's roughly 30% of 1920px height */
 .video-section {
-  height: var(--video-height);
+  width: 100%;
+  /* 16:9 aspect ratio at full width */
+  height: 56.25vw;
   background: #000;
   display: flex;
   align-items: center;
@@ -227,10 +212,9 @@ body {
 }
 
 .video-section video {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
+  width: 100%;
   height: 100%;
+  object-fit: contain;
 }
 
 .video-title {
@@ -247,39 +231,122 @@ body {
   pointer-events: none;
 }
 
-/* No images → video section fills remaining space */
-.ad-display.no-images .video-section {
-  height: calc(100vh - var(--header-height));
-}
-
-/* Image Carousel */
+/* Image Carousel — takes remaining space between video and bottom button */
 .image-carousel {
-  height: var(--carousel-height);
+  flex: 1;
+  position: relative;
   overflow: hidden;
-  background: #111;
-  flex-shrink: 0;
+  background: linear-gradient(135deg, #1a0f0a 0%, #2c1810 100%);
 }
 
-.image-track {
+.carousel-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-track {
   display: flex;
   height: 100%;
-  animation: imageScroll 60s linear infinite;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.image-track img {
+.carousel-slide {
+  min-width: 100%;
   height: 100%;
-  width: auto;
-  flex-shrink: 0;
-  object-fit: cover;
-  padding: 0 4px;
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes imageScroll {
-  0% {
-    transform: translateX(0);
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slide-title {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  z-index: 5;
+  white-space: nowrap;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-sm);
+  z-index: 10;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.carousel-dot.active {
+  background: #DAA520;
+  border-color: #DAA520;
+  transform: scale(1.3);
+}
+
+/* Placeholder when no images yet */
+.carousel-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: var(--font-size-xl);
+}
+
+/* Bottom Bar with Enter Menu Button */
+.bottom-bar {
+  height: var(--bottom-bar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2c1810, #1a0f0a);
+  flex-shrink: 0;
+}
+
+.enter-menu-btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: linear-gradient(135deg, #8B4513, #DAA520);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(139, 69, 19, 0.5);
   }
-  100% {
-    transform: translateX(-50%);
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 30px rgba(218, 165, 32, 0.7);
   }
 }
 

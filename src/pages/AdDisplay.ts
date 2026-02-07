@@ -9,19 +9,22 @@ export class AdDisplay {
   private videos = mediaPlaylist.filter(m => m.type === 'video');
   private images = mediaPlaylist.filter(m => m.type === 'image');
   private currentVideoIndex = 0;
+  private carouselIndex = 0;
+  private carouselTimer: number | null = null;
 
   constructor(container: HTMLElement, onEnterMenu: () => void) {
     this.container = container;
     this.onEnterMenu = onEnterMenu;
     this.render();
     this.initVideo();
+    this.startCarousel();
   }
 
   private render(): void {
     const hasImages = this.images.length > 0;
 
     this.container.innerHTML = `
-      <div class="ad-display${hasImages ? '' : ' no-images'}">
+      <div class="ad-display">
         <!-- Header Bar -->
         <div class="header-bar">
           <div class="store-info">
@@ -32,50 +35,72 @@ export class AdDisplay {
             <div class="qr-code">
               <img src="${storeInfo.qrCodeUrl}" alt="QR Code" />
             </div>
-            <button class="enter-menu-btn" id="enter-menu-btn">
-              \u{1F376} 菜单
-            </button>
           </div>
         </div>
 
         <!-- Video Section -->
         <div class="video-section">
-          <video id="ad-video" muted playsinline></video>
+          <video id="ad-video" playsinline></video>
           <div class="video-title" id="video-title"></div>
         </div>
 
         <!-- Image Carousel -->
-        ${hasImages ? `
         <div class="image-carousel">
-          <div class="image-track" id="image-track">
-            ${this.images.map(img => `<img src="${img.url}" alt="${img.title || ''}" />`).join('')}
-            ${this.images.map(img => `<img src="${img.url}" alt="${img.title || ''}" />`).join('')}
-          </div>
+          ${hasImages ? `
+            <div class="carousel-container">
+              <div class="carousel-track" id="carousel-track">
+                ${this.images.map((img, i) => `
+                  <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+                    <img src="${img.url}" alt="${img.title || ''}" />
+                    ${img.title ? `<div class="slide-title">${img.title}</div>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            <div class="carousel-dots" id="carousel-dots">
+              ${this.images.map((_, i) => `
+                <div class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="carousel-placeholder">
+              <span>宣传图片即将上线</span>
+            </div>
+          `}
         </div>
-        ` : ''}
+
+        <!-- Enter Menu Button -->
+        <div class="bottom-bar">
+          <button class="enter-menu-btn" id="enter-menu-btn">
+            \u{1F376} 点击查看产品
+          </button>
+        </div>
       </div>
     `;
 
     this.videoEl = document.getElementById('ad-video') as HTMLVideoElement;
     this.attachEventListeners();
-    this.setImageScrollSpeed();
   }
 
   private attachEventListeners(): void {
+    // Enter menu button
     document.getElementById('enter-menu-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.cleanup();
       this.onEnterMenu();
     });
+
+    // Carousel dots
+    document.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = parseInt((dot as HTMLElement).dataset.index || '0');
+        this.goToSlide(index);
+      });
+    });
   }
 
-  private setImageScrollSpeed(): void {
-    const track = document.getElementById('image-track') as HTMLElement | null;
-    if (!track || this.images.length === 0) return;
-    // ~15s per image for a smooth scroll
-    const duration = this.images.length * 15;
-    track.style.animationDuration = `${duration}s`;
-  }
+  // ---- Video ----
 
   private initVideo(): void {
     if (this.videos.length === 0 || !this.videoEl) return;
@@ -92,7 +117,6 @@ export class AdDisplay {
     if (!this.videoEl) return;
     const video = this.videos[index];
 
-    // Update title
     const titleEl = document.getElementById('video-title');
     if (titleEl) {
       titleEl.textContent = video.title || '';
@@ -106,7 +130,7 @@ export class AdDisplay {
       return;
     }
 
-    // Use hls.js for other browsers
+    // hls.js for other browsers
     if (Hls.isSupported()) {
       this.destroyHls();
       this.hls = new Hls();
@@ -125,12 +149,55 @@ export class AdDisplay {
     }
   }
 
+  // ---- Image Carousel ----
+
+  private startCarousel(): void {
+    if (this.images.length <= 1) return;
+    const interval = this.images[0]?.duration || 5000;
+    this.carouselTimer = window.setInterval(() => {
+      this.carouselIndex = (this.carouselIndex + 1) % this.images.length;
+      this.updateCarousel();
+    }, interval);
+  }
+
+  private goToSlide(index: number): void {
+    this.carouselIndex = index;
+    this.updateCarousel();
+    // Reset timer
+    if (this.carouselTimer) {
+      clearInterval(this.carouselTimer);
+      this.startCarousel();
+    }
+  }
+
+  private updateCarousel(): void {
+    const track = document.getElementById('carousel-track');
+    const dots = document.querySelectorAll('.carousel-dot');
+    const slides = document.querySelectorAll('.carousel-slide');
+
+    if (track) {
+      track.style.transform = `translateX(-${this.carouselIndex * 100}%)`;
+    }
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === this.carouselIndex);
+    });
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.carouselIndex);
+    });
+  }
+
+  // ---- Cleanup ----
+
   public cleanup(): void {
     this.destroyHls();
     if (this.videoEl) {
       this.videoEl.pause();
       this.videoEl.removeAttribute('src');
       this.videoEl.load();
+    }
+    if (this.carouselTimer) {
+      clearInterval(this.carouselTimer);
+      this.carouselTimer = null;
     }
   }
 
