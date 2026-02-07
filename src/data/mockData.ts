@@ -44,21 +44,26 @@ export const mediaPlaylist: MediaItem[] = [
     {
         type: 'video',
         url: `${BASE_URL}videos/古越龙山-品牌宣传片/index.m3u8`,
-        title: '古越龙山 品牌宣传片',
-        duration: 5000
     },
     {
         type: 'video',
         url: `${BASE_URL}videos/古越龙山-方文山曲/index.m3u8`,
-        title: '古越龙山 方文山曲',
-        duration: 5000
     },
     {
         type: 'video',
         url: `${BASE_URL}videos/古越龙山-只此青绿/index.m3u8`,
-        title: '古越龙山 只此青绿',
-        duration: 5000
     },
+    { type: 'image', url: `${BASE_URL}images/brands/guyuelongshan.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/guyuelongshan_palace.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/guyuelongshan_brewing.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/kuaijishan.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/kuaijishan_heritage.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/kuaijishan_cellar.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/kuaijishan_scenery.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/kuaijishan_mountain.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/nverhong_wedding.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/nverhong_tradition.png`, duration: 5000 },
+    { type: 'image', url: `${BASE_URL}images/brands/nverhong_bride.png`, duration: 5000 },
 ];
 
 // Categories - 黄酒分类

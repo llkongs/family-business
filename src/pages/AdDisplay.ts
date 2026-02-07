@@ -54,7 +54,7 @@ export class AdDisplay {
         <!-- Video Section -->
         <div class="video-section">
           <video id="ad-video" playsinline></video>
-          <div class="video-title" id="video-title"></div>
+          <button class="unmute-btn hidden" id="unmute-btn">\u{1F50A} \u70B9\u51FB\u5F00\u542F\u58F0\u97F3</button>
         </div>
 
         <!-- Image Carousel -->
@@ -101,6 +101,14 @@ export class AdDisplay {
       this.onEnterMenu?.();
     });
 
+    document.getElementById('unmute-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.videoEl) {
+        this.videoEl.muted = false;
+      }
+      (e.currentTarget as HTMLElement).classList.add('hidden');
+    });
+
     document.querySelectorAll('.carousel-dot').forEach(dot => {
       dot.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -130,11 +138,6 @@ export class AdDisplay {
 
     this.lastCurrentTime = -1;
     this.stallCount = 0;
-
-    const titleEl = document.getElementById('video-title');
-    if (titleEl) {
-      titleEl.textContent = video.title || '';
-    }
 
     // Safari native HLS
     if (this.videoEl.canPlayType('application/vnd.apple.mpegurl')) {
@@ -179,14 +182,16 @@ export class AdDisplay {
     }
   }
 
-  // T006: play() with catch — muted fallback
+  // T006: play() with catch — muted fallback + show unmute button
   private tryPlay(): void {
     if (!this.videoEl) return;
     this.videoEl.play().catch(() => {
       console.warn('[Video] Autoplay blocked, retrying muted...');
       if (this.videoEl) {
         this.videoEl.muted = true;
-        this.videoEl.play().catch((err) => {
+        this.videoEl.play().then(() => {
+          document.getElementById('unmute-btn')?.classList.remove('hidden');
+        }).catch((err) => {
           console.error('[Video] Muted autoplay also failed:', err);
         });
       }
