@@ -123,7 +123,8 @@ export class AdDisplay {
 
           ${showCta ? `
             <button class="cta-fab" id="enter-menu-btn">
-              \u{1F376} \u9274\u8D4F\u4F73\u917F
+              查看产品详情
+              <svg viewBox="0 0 24 24" fill="none" width="1em" height="1em"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           ` : ''}
         </div>
