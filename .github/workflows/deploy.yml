@@ -30,8 +30,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # T023: Pre-deployment data integrity check
+      - name: Validate data (pre-build)
+        run: bash tools/validate-data.sh
+
       - name: Build
         run: npm run build
+
+      # T024: Post-build validation (check built artifacts)
+      - name: Validate build artifacts
+        run: |
+          # Ensure no Feishu temp URLs leaked into built JS/CSS
+          if grep -r "open.feishu.cn" dist/; then
+            echo "ERROR: Feishu URLs found in build output"
+            exit 1
+          fi
+          echo "OK: Build artifacts clean"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
