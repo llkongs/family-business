@@ -90,7 +90,9 @@ export class AdDisplay {
                 ${this.images.map((img, i) => `
                   <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
                     <img src="${esc(safeUrlValue(img.url))}" alt="${esc(img.title || '')}" />
-                    ${img.title ? `<div class="slide-title">${esc(img.title)}</div>` : ''}
+                    ${img.title ? `<div class="carousel-caption">
+                      <div class="carousel-caption-title">${esc(img.title)}</div>
+                    </div>` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -108,7 +110,7 @@ export class AdDisplay {
 
           ${showCta ? `
             <button class="cta-fab" id="enter-menu-btn">
-              \u{1F376} \u67E5\u770B\u4EA7\u54C1\u8BE6\u60C5
+              \u{1F376} \u9274\u8D4F\u4F73\u917F
             </button>
           ` : ''}
         </div>

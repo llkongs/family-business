@@ -22,21 +22,15 @@ export class ProductMenu {
   private render(): void {
     this.container.innerHTML = `
       <div class="product-menu">
-        <!-- Header -->
-        <div class="menu-header">
-          <button class="back-btn" id="back-btn">←</button>
-          <span class="menu-title">菜单</span>
-          <div style="width: 40px;"></div>
-        </div>
-
         <!-- Content -->
         <div class="menu-content">
-          <!-- Category Navigation -->
+          <!-- Category Sidebar -->
           <nav class="category-nav" id="category-nav">
+            <button class="back-btn" id="back-btn">\u21A9</button>
             ${categories.map(cat => `
               <div class="category-item ${cat.id === this.activeCategory ? 'active' : ''}"
                    data-category="${esc(cat.id)}">
-                ${esc(cat.icon || '')} ${esc(cat.name)}
+                ${esc(cat.name)}
               </div>
             `).join('')}
           </nav>
@@ -59,7 +53,7 @@ export class ProductMenu {
 
       return `
         <section class="category-section" data-section="${cat.id}">
-          <h2 class="category-title">${esc(cat.icon || '')} ${esc(cat.name)}</h2>
+          <h2 class="category-title">${esc(cat.name)}</h2>
           ${categoryProducts.map(product => this.renderProductCard(product)).join('')}
         </section>
       `;
