@@ -53,8 +53,6 @@ pub struct RawMediaItem {
     pub title: Option<String>,
     pub duration: Option<i64>,
     pub sort_order: i32,
-    /// External URL (from "外部链接" field)
-    pub external_url: Option<String>,
     /// Attachment info (from "文件" field)
     pub attachment: Option<AttachmentInfo>,
 }
@@ -65,11 +63,10 @@ pub fn parse_raw_media_item(
 ) -> Result<RawMediaItem> {
     use crate::models::bitable_records::*;
 
-    let external_url = extract_url(fields, "外部链接");
     let attachment = extract_attachment_info(fields, "文件");
 
-    if external_url.is_none() && attachment.is_none() {
-        anyhow::bail!("Media missing both '文件' attachment and '外部链接'");
+    if attachment.is_none() {
+        anyhow::bail!("Media missing '文件' attachment");
     }
 
     let raw_type = extract_select(fields, "媒体类型").unwrap_or_else(|| "image".to_string());
@@ -79,7 +76,6 @@ pub fn parse_raw_media_item(
         title: extract_text(fields, "标题"),
         duration: extract_number(fields, "时长(ms)").map(|n| n as i64),
         sort_order: extract_number(fields, "排序").unwrap_or(0.0) as i32,
-        external_url,
         attachment,
     })
 }
@@ -405,25 +401,15 @@ pub async fn process_media_items(
                         continue;
                     }
                 }
-            } else if let Some(ref url) = raw.external_url {
-                // Video with external URL (already hosted elsewhere)
-                crate::models::mock_data::MediaItem {
-                    media_type: "video".to_string(),
-                    url: url.clone(),
-                    title: raw.title.clone(),
-                    duration: raw.duration,
-                    sort_order: raw.sort_order,
-                }
             } else {
                 tracing::warn!(
-                    "Video '{}' has no attachment or URL, skipping",
+                    "Video '{}' has no attachment, skipping",
                     raw.title.as_deref().unwrap_or("untitled")
                 );
                 continue;
             }
         } else {
-            // Image: download attachment to public/images/media/ if available,
-            // otherwise use external URL
+            // Image: download attachment to public/images/media/
             let url = if let Some(ref att) = raw.attachment {
                 let slug = slugify(
                     raw.title
@@ -450,10 +436,14 @@ pub async fn process_media_items(
                 if dest.exists() {
                     format!("images/media/{}.{}", slug, ext)
                 } else {
-                    raw.external_url.clone().unwrap_or_default()
+                    String::new()
                 }
             } else {
-                raw.external_url.clone().unwrap_or_default()
+                tracing::warn!(
+                    "Image '{}' has no attachment, skipping",
+                    raw.title.as_deref().unwrap_or("untitled")
+                );
+                continue;
             };
 
             crate::models::mock_data::MediaItem {

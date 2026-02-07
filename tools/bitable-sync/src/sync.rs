@@ -101,9 +101,9 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
             .map(|raw| crate::models::mock_data::MediaItem {
                 media_type: raw.media_type.clone(),
                 url: raw
-                    .external_url
-                    .clone()
-                    .or_else(|| raw.attachment.as_ref().map(|a| format!("[attachment:{}]", a.file_token)))
+                    .attachment
+                    .as_ref()
+                    .map(|a| format!("[attachment:{}]", a.file_token))
                     .unwrap_or_default(),
                 title: raw.title.clone(),
                 duration: raw.duration,
