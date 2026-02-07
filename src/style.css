@@ -55,8 +55,8 @@
   --transition-normal: 300ms ease;
   --transition-slow: 500ms ease;
 
-  /* Layout — vertical 9:16 4K screen (2160×3840) */
-  --header-height: 20vh;
+  /* Layout — works on all screens */
+  --header-height: 8vh;
 }
 
 /* Reset & Base */
@@ -147,13 +147,12 @@ body {
 
 .store-info {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1vh;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .store-name {
-  font-size: min(100px, 4.6vw);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
@@ -161,10 +160,10 @@ body {
 .store-phone {
   display: flex;
   align-items: center;
-  gap: 0.5vw;
-  font-size: min(78px, 3.6vw);
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.4vh 1vw;
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-full);
 }
 
@@ -179,12 +178,11 @@ body {
 }
 
 .qr-code {
-  height: calc(var(--header-height) - 40px);
+  height: calc(var(--header-height) - 8px);
   aspect-ratio: 1;
-  min-height: 500px;
   background: white;
   border-radius: var(--radius-sm);
-  padding: 32px;
+  padding: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -223,10 +221,10 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.5vh 2vw;
+  padding: var(--spacing-sm) var(--spacing-md);
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
   color: white;
-  font-size: min(60px, 2.8vw);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   text-align: center;
   pointer-events: none;
@@ -268,10 +266,10 @@ body {
 
 .slide-title {
   position: absolute;
-  bottom: 80px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: min(56px, 2.6vw);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: white;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
@@ -282,17 +280,17 @@ body {
 /* Carousel Dots */
 .carousel-dots {
   position: absolute;
-  bottom: min(32px, 0.8vh);
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: min(16px, 0.7vw);
+  gap: var(--spacing-sm);
   z-index: 10;
 }
 
 .carousel-dot {
-  width: min(24px, 1.1vw);
-  height: min(24px, 1.1vw);
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   transition: all var(--transition-fast);
@@ -314,28 +312,27 @@ body {
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.3);
-  font-size: min(60px, 2.8vw);
+  font-size: var(--font-size-xl);
 }
 
 /* T012/T018: CTA Floating Action Button — right-bottom of image area */
 .cta-fab {
   position: absolute;
-  right: min(72px, 3.3vw);
-  bottom: min(72px, 1.9vh);
-  height: min(120px, 3.1vh);
-  padding: 0 min(64px, 3vw);
+  right: 16px;
+  bottom: 16px;
+  padding: var(--spacing-md) var(--spacing-xl);
   background: rgba(30, 20, 10, 0.75);
   color: #DAA520;
   border: 2px solid rgba(218, 165, 32, 0.5);
   border-radius: var(--radius-full);
-  font-size: min(52px, 2.4vw);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 0.5vw;
+  gap: var(--spacing-xs);
   transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
   white-space: nowrap;
 }
@@ -345,6 +342,70 @@ body {
   background: rgba(40, 25, 12, 0.9);
   border-color: rgba(218, 165, 32, 0.8);
   box-shadow: 0 6px 32px rgba(218, 165, 32, 0.3);
+}
+
+/* ============================================
+   4K Portrait Display Override (2160×3840)
+   Targets the store's 55-inch vertical 4K screen.
+   ============================================ */
+@media (min-height: 1800px) and (orientation: portrait) {
+  :root {
+    --header-height: 20vh;
+  }
+
+  .store-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1vh;
+  }
+
+  .store-name {
+    font-size: min(100px, 4.6vw);
+  }
+
+  .store-phone {
+    font-size: min(78px, 3.6vw);
+    padding: 0.4vh 1vw;
+    gap: 0.5vw;
+  }
+
+  .qr-code {
+    height: calc(var(--header-height) - 40px);
+    padding: 32px;
+  }
+
+  .video-title {
+    font-size: min(60px, 2.8vw);
+    padding: 1.5vh 2vw;
+  }
+
+  .slide-title {
+    font-size: min(56px, 2.6vw);
+    bottom: 80px;
+  }
+
+  .carousel-dots {
+    bottom: 32px;
+    gap: 16px;
+  }
+
+  .carousel-dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .carousel-placeholder {
+    font-size: min(60px, 2.8vw);
+  }
+
+  .cta-fab {
+    right: 72px;
+    bottom: 72px;
+    padding: 0 64px;
+    height: 120px;
+    font-size: min(52px, 2.4vw);
+    gap: 0.5vw;
+  }
 }
 
 /* ============================================
