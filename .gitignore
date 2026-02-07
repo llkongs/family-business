@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# bitable-sync
+tools/bitable-sync/.env.txt
+tools/bitable-sync/target/
