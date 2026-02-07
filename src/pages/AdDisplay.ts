@@ -298,7 +298,6 @@ export class AdDisplay {
   }
 
   private updateCarousel(): void {
-    const track = document.getElementById('carousel-track');
     const dots = document.querySelectorAll('.carousel-dot');
     const slides = document.querySelectorAll('.carousel-slide');
 
