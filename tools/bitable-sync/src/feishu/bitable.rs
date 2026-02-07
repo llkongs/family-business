@@ -192,15 +192,6 @@ impl FieldDef {
         }
     }
 
-    /// Create a URL/hyperlink field
-    pub fn url(name: &str) -> Self {
-        Self {
-            field_name: name.to_string(),
-            field_type: FieldType::Url as i32,
-            property: None,
-        }
-    }
-
     /// Create an attachment field
     pub fn attachment(name: &str) -> Self {
         Self {

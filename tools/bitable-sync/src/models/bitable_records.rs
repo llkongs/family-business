@@ -121,6 +121,7 @@ pub fn extract_phone(fields: &HashMap<String, serde_json::Value>, key: &str) -> 
 
 /// Extract a URL/hyperlink field (type 15)
 /// URL fields can come as {"text": "url", "link": "url"} or just a string
+#[allow(dead_code)]
 pub fn extract_url(fields: &HashMap<String, serde_json::Value>, key: &str) -> Option<String> {
     let val = fields.get(key)?;
 
@@ -209,10 +210,8 @@ pub fn parse_display_category(
 pub fn parse_media_item(
     fields: &HashMap<String, serde_json::Value>,
 ) -> Result<super::mock_data::MediaItem> {
-    // Prefer attachment file URL, fallback to external URL field
     let url = extract_attachment_url(fields, "文件")
-        .or_else(|| extract_url(fields, "外部链接"))
-        .context("Media missing both '文件' and '外部链接'")?;
+        .context("Media missing '文件' attachment")?;
 
     Ok(super::mock_data::MediaItem {
         media_type: extract_select(fields, "媒体类型").unwrap_or_else(|| "image".to_string()),

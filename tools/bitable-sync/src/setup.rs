@@ -38,8 +38,8 @@ fn guide_records() -> Vec<serde_json::Value> {
         serde_json::json!({"fields": {
             "表名": "轮播媒体表 Media",
             "用途": "管理首页轮播区的图片和视频素材。",
-            "必填字段": "媒体类型 + 文件或外部链接（二选一）",
-            "填写说明": "媒体类型选 image 或 video。图片/视频可直接上传到「文件」字段，或填写「外部链接」URL。所属品牌通过关联选择。排序数字越小越靠前。视频可填时长(毫秒)。"
+            "必填字段": "媒体类型 + 文件",
+            "填写说明": "媒体类型选 image 或 video。图片/视频直接上传到「文件」字段。所属品牌通过关联选择。排序数字越小越靠前。视频可填时长(毫秒)。"
         }}),
         serde_json::json!({"fields": {
             "表名": "店铺信息表 Store Info",
@@ -134,7 +134,6 @@ fn define_schemas() -> Vec<TableSchema> {
                 FieldDef::text("标题"),
                 FieldDef::single_select("媒体类型", &["image", "video"]),
                 FieldDef::attachment("文件"),
-                FieldDef::url("外部链接"),
                 FieldDef::number("时长(ms)", "0"),
                 FieldDef::number("排序", "0"),
             ],
