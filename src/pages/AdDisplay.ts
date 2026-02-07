@@ -66,6 +66,12 @@ export class AdDisplay {
           </div>
         </div>
 
+        <!-- Video Section -->
+        <div class="video-section">
+          <video id="ad-video" playsinline></video>
+          <button class="unmute-btn hidden" id="unmute-btn">\u{1F50A} \u70B9\u51FB\u5F00\u542F\u58F0\u97F3</button>
+        </div>
+
         <!-- Marquee Ticker -->
         ${slogans.length > 0 ? `
         <div class="ticker-bar">
@@ -75,12 +81,6 @@ export class AdDisplay {
           </div>
         </div>
         ` : ''}
-
-        <!-- Video Section -->
-        <div class="video-section">
-          <video id="ad-video" playsinline></video>
-          <button class="unmute-btn hidden" id="unmute-btn">\u{1F50A} \u70B9\u51FB\u5F00\u542F\u58F0\u97F3</button>
-        </div>
 
         <!-- Image Carousel -->
         <div class="image-carousel">
