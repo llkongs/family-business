@@ -162,6 +162,18 @@ pub fn extract_attachment_url(
     None
 }
 
+/// Extract the first attachment's file_token from an attachment field.
+/// Used for downloading the attachment via Feishu Drive API.
+pub fn extract_attachment_file_token(
+    fields: &HashMap<String, serde_json::Value>,
+    key: &str,
+) -> Option<String> {
+    let val = fields.get(key)?;
+    let arr = val.as_array()?;
+    let first = arr.first()?;
+    first.get("file_token").and_then(|t| t.as_str()).map(|s| s.to_string())
+}
+
 // ============================================================
 // Field name mapping: Chinese field names in bitable
 // ============================================================
@@ -219,6 +231,7 @@ pub fn parse_store_info(
         name: extract_text(fields, "店铺名称").context("StoreInfo missing '店铺名称'")?,
         phone: extract_phone(fields, "联系电话").context("StoreInfo missing '联系电话'")?,
         qr_code_url: extract_attachment_url(fields, "二维码").unwrap_or_default(),
+        qr_file_token: extract_attachment_file_token(fields, "二维码"),
     })
 }
 
@@ -241,6 +254,7 @@ pub struct RawProduct {
     pub brewing_process: String,
     pub flavor_profile: String,
     pub main_image: String,
+    pub main_image_file_token: Option<String>,
     pub short_description: String,
     pub long_description: Option<String>,
     pub status: String,
@@ -264,6 +278,7 @@ pub fn parse_raw_product(
 
     // For main_image: try attachment URL first, fallback to empty
     let main_image = extract_attachment_url(fields, "商品主图").unwrap_or_default();
+    let main_image_file_token = extract_attachment_file_token(fields, "商品主图");
 
     Ok(RawProduct {
         id: extract_text(fields, "商品ID").context("Product missing '商品ID'")?,
@@ -283,6 +298,7 @@ pub fn parse_raw_product(
         brewing_process: extract_text(fields, "酿造工艺").unwrap_or_default(),
         flavor_profile: extract_text(fields, "风味描述").unwrap_or_default(),
         main_image,
+        main_image_file_token,
         short_description: extract_text(fields, "简短描述").unwrap_or_default(),
         long_description: extract_text(fields, "详细描述"),
         status: extract_select(fields, "状态").unwrap_or_else(|| "active".to_string()),

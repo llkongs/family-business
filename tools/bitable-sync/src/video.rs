@@ -422,11 +422,39 @@ pub async fn process_media_items(
                 continue;
             }
         } else {
-            // Image: use external URL (attachment images need separate handling)
-            let url = raw
-                .external_url
-                .clone()
-                .unwrap_or_default();
+            // Image: download attachment to public/images/media/ if available,
+            // otherwise use external URL
+            let url = if let Some(ref att) = raw.attachment {
+                let slug = slugify(
+                    raw.title
+                        .as_deref()
+                        .unwrap_or(&att.name.replace('.', "-")),
+                );
+                let images_dir = public_dir.join("images").join("media");
+                let ext = att.name.rsplit('.').next().unwrap_or("jpg");
+                let dest = images_dir.join(format!("{}.{}", slug, ext));
+                if !dest.exists() {
+                    match download_image_attachment(auth, &att.file_token, &dest).await {
+                        Ok(()) => {
+                            tracing::info!("Downloaded media image '{}'", slug);
+                        }
+                        Err(e) => {
+                            tracing::warn!(
+                                "Failed to download media image '{}': {}",
+                                slug,
+                                e
+                            );
+                        }
+                    }
+                }
+                if dest.exists() {
+                    format!("images/media/{}.{}", slug, ext)
+                } else {
+                    raw.external_url.clone().unwrap_or_default()
+                }
+            } else {
+                raw.external_url.clone().unwrap_or_default()
+            };
 
             crate::models::mock_data::MediaItem {
                 media_type: raw.media_type.clone(),
@@ -452,6 +480,21 @@ pub async fn process_media_items(
     );
 
     Ok(results)
+}
+
+/// Download a Feishu attachment (image/QR code) to a local path.
+/// Returns the relative path from public/ (e.g. "images/qrcode.jpg").
+/// Skips download if the destination file already exists and file_token hasn't changed.
+pub async fn download_image_attachment(
+    auth: &FeishuAuth,
+    file_token: &str,
+    dest_path: &Path,
+) -> Result<()> {
+    // Resolve the temporary download URL
+    let dl_url = resolve_download_url(auth, file_token).await?;
+    download_file(&dl_url, dest_path).await?;
+    tracing::info!("Downloaded image attachment to {}", dest_path.display());
+    Ok(())
 }
 
 /// Collect all video-related file paths under public/videos/ for git staging

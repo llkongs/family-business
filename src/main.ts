@@ -4,7 +4,9 @@ import { ProductMenu } from './pages/ProductMenu';
 
 type Page = 'ad' | 'menu' | 'password';
 
-// Password for access
+// ⚠️ 注意：此密码仅为防误触门禁，不构成任何安全鉴权。
+// 页面部署在公开 GitHub Pages 上，任何人可查看源码获取此密码。
+// 如需真正的访问控制，请参考 docs/ARCHITECTURE.md 10.2 节。
 const ACCESS_PASSWORD = '594822';
 
 class App {

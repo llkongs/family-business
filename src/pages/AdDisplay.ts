@@ -11,6 +11,11 @@ export class AdDisplay {
   private currentVideoIndex = 0;
   private carouselIndex = 0;
   private carouselTimer: number | null = null;
+  private watchdogTimer: number | null = null;
+  private lastCurrentTime = -1;
+  private stallCount = 0;
+  private static readonly WATCHDOG_INTERVAL = 5000; // check every 5s
+  private static readonly MAX_STALL_COUNT = 3; // 3 consecutive stalls → skip
 
   constructor(container: HTMLElement, onEnterMenu: () => void) {
     this.container = container;
@@ -111,11 +116,16 @@ export class AdDisplay {
     });
 
     this.loadVideo(0);
+    this.startWatchdog();
   }
 
   private loadVideo(index: number): void {
     if (!this.videoEl) return;
     const video = this.videos[index];
+
+    // Reset watchdog state on new video
+    this.lastCurrentTime = -1;
+    this.stallCount = 0;
 
     const titleEl = document.getElementById('video-title');
     if (titleEl) {
@@ -126,20 +136,64 @@ export class AdDisplay {
     if (this.videoEl.canPlayType('application/vnd.apple.mpegurl')) {
       this.destroyHls();
       this.videoEl.src = video.url;
-      this.videoEl.play();
+      this.tryPlay();
       return;
     }
 
     // hls.js for other browsers
     if (Hls.isSupported()) {
       this.destroyHls();
-      this.hls = new Hls();
+      this.hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+      });
       this.hls.loadSource(video.url);
       this.hls.attachMedia(this.videoEl);
+
+      // T007: HLS error listener with recovery strategy
+      this.hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal) return;
+
+        switch (data.type) {
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            console.warn('[HLS] Fatal network error, attempting recovery...');
+            this.hls?.startLoad();
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            console.warn('[HLS] Fatal media error, attempting recovery...');
+            this.hls?.recoverMediaError();
+            break;
+          default:
+            console.error('[HLS] Unrecoverable error, skipping to next video');
+            this.skipToNextVideo();
+            break;
+        }
+      });
+
       this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        this.videoEl!.play();
+        this.tryPlay();
       });
     }
+  }
+
+  // T006: play() with catch — falls back to muted autoplay
+  private tryPlay(): void {
+    if (!this.videoEl) return;
+
+    this.videoEl.play().catch(() => {
+      console.warn('[Video] Autoplay blocked, retrying muted...');
+      if (this.videoEl) {
+        this.videoEl.muted = true;
+        this.videoEl.play().catch((err) => {
+          console.error('[Video] Muted autoplay also failed:', err);
+        });
+      }
+    });
+  }
+
+  private skipToNextVideo(): void {
+    this.currentVideoIndex = (this.currentVideoIndex + 1) % this.videos.length;
+    this.loadVideo(this.currentVideoIndex);
   }
 
   private destroyHls(): void {
@@ -147,6 +201,26 @@ export class AdDisplay {
       this.hls.destroy();
       this.hls = null;
     }
+  }
+
+  // T008: Watchdog — detect stalled playback and recover
+  private startWatchdog(): void {
+    this.watchdogTimer = window.setInterval(() => {
+      if (!this.videoEl || this.videoEl.paused) return;
+
+      const ct = this.videoEl.currentTime;
+      if (this.lastCurrentTime >= 0 && ct === this.lastCurrentTime) {
+        this.stallCount++;
+        console.warn(`[Watchdog] Stall detected (${this.stallCount}/${AdDisplay.MAX_STALL_COUNT})`);
+        if (this.stallCount >= AdDisplay.MAX_STALL_COUNT) {
+          console.error('[Watchdog] Max stalls reached, skipping to next video');
+          this.skipToNextVideo();
+        }
+      } else {
+        this.stallCount = 0;
+      }
+      this.lastCurrentTime = ct;
+    }, AdDisplay.WATCHDOG_INTERVAL);
   }
 
   // ---- Image Carousel ----
@@ -198,6 +272,10 @@ export class AdDisplay {
     if (this.carouselTimer) {
       clearInterval(this.carouselTimer);
       this.carouselTimer = null;
+    }
+    if (this.watchdogTimer) {
+      clearInterval(this.watchdogTimer);
+      this.watchdogTimer = null;
     }
   }
 

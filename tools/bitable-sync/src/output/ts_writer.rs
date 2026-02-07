@@ -61,8 +61,8 @@ pub fn generate_mock_data_ts(data: &MockData) -> Result<String> {
     writeln!(out, "    phone: {},", ts_string(&data.store_info.phone))?;
     writeln!(
         out,
-        "    qrCodeUrl: `${{BASE_URL}}{}`",
-        data.store_info.qr_code_url
+        "    qrCodeUrl: {}",
+        ts_url(&data.store_info.qr_code_url)
     )?;
     writeln!(out, "}};")?;
     writeln!(out)?;
@@ -76,7 +76,7 @@ pub fn generate_mock_data_ts(data: &MockData) -> Result<String> {
     for item in &data.media_playlist {
         writeln!(out, "    {{")?;
         writeln!(out, "        type: {},", ts_string(&item.media_type))?;
-        writeln!(out, "        url: `${{BASE_URL}}{}`,", item.url)?;
+        writeln!(out, "        url: {},", ts_url(&item.url))?;
         if let Some(ref title) = item.title {
             writeln!(out, "        title: {},", ts_string(title))?;
         }
@@ -130,8 +130,8 @@ pub fn generate_mock_data_ts(data: &MockData) -> Result<String> {
         writeln!(out, "        price: {},", format_price(product.price))?;
         writeln!(
             out,
-            "        image: `${{BASE_URL}}{}`",
-            product.image
+            "        image: {}",
+            ts_url(&product.image)
         )?;
     writeln!(out, "    }},")?;
     }
@@ -184,6 +184,20 @@ pub fn write_mock_data_ts(data: &MockData, output_path: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Generate a TypeScript URL expression.
+/// Absolute URLs (http:// or https://) are emitted as plain string literals.
+/// Relative paths are wrapped in `${BASE_URL}...` template literals.
+/// Empty strings produce an empty string literal.
+fn ts_url(url: &str) -> String {
+    if url.is_empty() {
+        "''".to_string()
+    } else if url.starts_with("http://") || url.starts_with("https://") {
+        format!("'{}'", url.replace('\'', "\\'"))
+    } else {
+        format!("`${{BASE_URL}}{}`", url)
+    }
+}
+
 /// Escape a string for TypeScript string literal
 fn ts_string(s: &str) -> String {
     let escaped = s
@@ -199,5 +213,52 @@ fn format_price(price: f64) -> String {
         format!("{}", price as i64)
     } else {
         format!("{}", price)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ts_url_relative_path() {
+        assert_eq!(ts_url("images/qrcode.jpg"), "`${BASE_URL}images/qrcode.jpg`");
+    }
+
+    #[test]
+    fn ts_url_relative_path_with_subdir() {
+        assert_eq!(
+            ts_url("videos/slug/index.m3u8"),
+            "`${BASE_URL}videos/slug/index.m3u8`"
+        );
+    }
+
+    #[test]
+    fn ts_url_absolute_https() {
+        assert_eq!(
+            ts_url("https://example.com/image.png"),
+            "'https://example.com/image.png'"
+        );
+    }
+
+    #[test]
+    fn ts_url_absolute_http() {
+        assert_eq!(
+            ts_url("http://example.com/image.png"),
+            "'http://example.com/image.png'"
+        );
+    }
+
+    #[test]
+    fn ts_url_empty_string() {
+        assert_eq!(ts_url(""), "''");
+    }
+
+    #[test]
+    fn ts_url_absolute_with_single_quote() {
+        assert_eq!(
+            ts_url("https://example.com/it's-a-test"),
+            "'https://example.com/it\\'s-a-test'"
+        );
     }
 }

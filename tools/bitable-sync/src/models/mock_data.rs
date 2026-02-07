@@ -6,6 +6,9 @@ pub struct StoreInfo {
     pub name: String,
     pub phone: String,
     pub qr_code_url: String,
+    /// Feishu attachment file_token for QR code (used during sync to download)
+    #[serde(skip)]
+    pub qr_file_token: Option<String>,
 }
 
 /// Media item for carousel (matches mockData.ts MediaItem)

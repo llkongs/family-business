@@ -35,12 +35,29 @@ pub fn has_changes(repo_path: &Path) -> Result<bool> {
     Ok(!status.trim().is_empty())
 }
 
-/// Stage, commit, and push changes
+/// Stage, commit, and push changes.
+/// Uses `git add -A` on managed directories so that deleted files are
+/// correctly removed from the index (fixes historical garbage accumulation).
 pub fn commit_and_push(repo_path: &Path, files: &[&str]) -> Result<()> {
-    // Stage specific files
+    // Stage managed directories with -A to capture additions AND deletions.
+    // Individual files outside these dirs are staged explicitly.
+    let managed_dirs = ["src/data", "public/videos", "public/images"];
+
+    for dir in &managed_dirs {
+        let dir_path = repo_path.join(dir);
+        if dir_path.exists() {
+            git(repo_path, &["add", "-A", dir])
+                .with_context(|| format!("Failed to stage directory {}", dir))?;
+        }
+    }
+
+    // Also stage any explicitly listed files not already covered
     for file in files {
-        git(repo_path, &["add", file])
-            .with_context(|| format!("Failed to stage {}", file))?;
+        let covered = managed_dirs.iter().any(|d| file.starts_with(d));
+        if !covered {
+            git(repo_path, &["add", file])
+                .with_context(|| format!("Failed to stage {}", file))?;
+        }
     }
 
     // Check if there are staged changes

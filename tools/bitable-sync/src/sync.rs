@@ -88,7 +88,7 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         crate::video::process_media_items(&auth, raw_media_items, &config.public_dir()).await?
     };
 
-    let store_info = store_raw
+    let mut store_info = store_raw
         .first()
         .map(|r| bitable_records::parse_store_info(&r.fields))
         .transpose()?
@@ -96,7 +96,36 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
             name: "绍兴黄酒专卖".to_string(),
             phone: "15936229925".to_string(),
             qr_code_url: "images/qrcode.jpg".to_string(),
+            qr_file_token: None,
         });
+
+    // T003: Download QR code attachment to public/images/qrcode.jpg if file_token available
+    if !opts.dry_run {
+        if let Some(ref token) = store_info.qr_file_token {
+            let qr_dest = config.public_dir().join("images").join("qrcode.jpg");
+            match crate::video::download_image_attachment(&auth, token, &qr_dest).await {
+                Ok(()) => {
+                    store_info.qr_code_url = "images/qrcode.jpg".to_string();
+                    tracing::info!("QR code downloaded to public/images/qrcode.jpg");
+                }
+                Err(e) => {
+                    tracing::warn!("Failed to download QR code: {}. Using fallback.", e);
+                    // Fallback: if local file exists, use it; otherwise keep the original URL
+                    let fallback = config.public_dir().join("images").join("qrcode.jpg");
+                    if fallback.exists() {
+                        store_info.qr_code_url = "images/qrcode.jpg".to_string();
+                    }
+                }
+            }
+        } else {
+            // No file_token: use local file if it exists
+            let fallback = config.public_dir().join("images").join("qrcode.jpg");
+            if fallback.exists() {
+                store_info.qr_code_url = "images/qrcode.jpg".to_string();
+            }
+        }
+    }
+
     tracing::info!("Store info: {}", store_info.name);
 
     let raw_products: Vec<_> = products_raw
@@ -110,6 +139,30 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         })
         .collect();
     tracing::info!("Parsed {} products", raw_products.len());
+
+    // T004: Download product images from Feishu attachments to public/images/products/
+    if !opts.dry_run {
+        let products_img_dir = config.public_dir().join("images").join("products");
+        for product in &raw_products {
+            if let Some(ref token) = product.main_image_file_token {
+                let dest = products_img_dir.join(format!("{}.jpg", product.id));
+                if !dest.exists() {
+                    match crate::video::download_image_attachment(&auth, token, &dest).await {
+                        Ok(()) => {
+                            tracing::info!("Downloaded product image for '{}'", product.name);
+                        }
+                        Err(e) => {
+                            tracing::warn!(
+                                "Failed to download image for '{}': {}",
+                                product.name,
+                                e
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     // 4. Build product categories for productDatabase.json
     // We use the display categories as the category source, converting to the full Category type
