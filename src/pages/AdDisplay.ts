@@ -1,9 +1,16 @@
 import Hls from 'hls.js';
 import { storeInfo, mediaPlaylist } from '../data/mockData';
 
+// T015: HTML escape helper to prevent XSS from external data
+function esc(s: string): string {
+  const el = document.createElement('span');
+  el.textContent = s;
+  return el.innerHTML;
+}
+
 export class AdDisplay {
   private container: HTMLElement;
-  private onEnterMenu: () => void;
+  private onEnterMenu: (() => void) | null;
   private hls: Hls | null = null;
   private videoEl: HTMLVideoElement | null = null;
   private videos = mediaPlaylist.filter(m => m.type === 'video');
@@ -14,10 +21,10 @@ export class AdDisplay {
   private watchdogTimer: number | null = null;
   private lastCurrentTime = -1;
   private stallCount = 0;
-  private static readonly WATCHDOG_INTERVAL = 5000; // check every 5s
-  private static readonly MAX_STALL_COUNT = 3; // 3 consecutive stalls → skip
+  private static readonly WATCHDOG_INTERVAL = 5000;
+  private static readonly MAX_STALL_COUNT = 3;
 
-  constructor(container: HTMLElement, onEnterMenu: () => void) {
+  constructor(container: HTMLElement, onEnterMenu: (() => void) | null) {
     this.container = container;
     this.onEnterMenu = onEnterMenu;
     this.render();
@@ -27,14 +34,15 @@ export class AdDisplay {
 
   private render(): void {
     const hasImages = this.images.length > 0;
+    const showCta = this.onEnterMenu !== null;
 
     this.container.innerHTML = `
       <div class="ad-display">
         <!-- Header Bar -->
         <div class="header-bar">
           <div class="store-info">
-            <span class="store-name">\u{1F3FA} ${storeInfo.name}</span>
-            <span class="store-phone">${storeInfo.phone}</span>
+            <span class="store-name">\u{1F3FA} ${esc(storeInfo.name)}</span>
+            <span class="store-phone">${esc(storeInfo.phone)}</span>
           </div>
           <div class="header-right">
             <div class="qr-code">
@@ -56,8 +64,8 @@ export class AdDisplay {
               <div class="carousel-track" id="carousel-track">
                 ${this.images.map((img, i) => `
                   <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
-                    <img src="${img.url}" alt="${img.title || ''}" />
-                    ${img.title ? `<div class="slide-title">${img.title}</div>` : ''}
+                    <img src="${img.url}" alt="${esc(img.title || '')}" />
+                    ${img.title ? `<div class="slide-title">${esc(img.title)}</div>` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -69,16 +77,15 @@ export class AdDisplay {
             </div>
           ` : `
             <div class="carousel-placeholder">
-              <span>宣传图片即将上线</span>
+              <span>\u{1F3BA} \u5BA3\u4F20\u56FE\u7247\u5373\u5C06\u4E0A\u7EBF</span>
             </div>
           `}
-        </div>
 
-        <!-- Enter Menu Button -->
-        <div class="bottom-bar">
-          <button class="enter-menu-btn" id="enter-menu-btn">
-            \u{1F376} 点击查看产品
-          </button>
+          ${showCta ? `
+            <button class="cta-fab" id="enter-menu-btn">
+              \u{1F376} \u67E5\u770B\u4EA7\u54C1\u8BE6\u60C5
+            </button>
+          ` : ''}
         </div>
       </div>
     `;
@@ -88,14 +95,12 @@ export class AdDisplay {
   }
 
   private attachEventListeners(): void {
-    // Enter menu button
     document.getElementById('enter-menu-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.cleanup();
-      this.onEnterMenu();
+      this.onEnterMenu?.();
     });
 
-    // Carousel dots
     document.querySelectorAll('.carousel-dot').forEach(dot => {
       dot.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -123,7 +128,6 @@ export class AdDisplay {
     if (!this.videoEl) return;
     const video = this.videos[index];
 
-    // Reset watchdog state on new video
     this.lastCurrentTime = -1;
     this.stallCount = 0;
 
@@ -150,10 +154,9 @@ export class AdDisplay {
       this.hls.loadSource(video.url);
       this.hls.attachMedia(this.videoEl);
 
-      // T007: HLS error listener with recovery strategy
+      // T007: HLS error recovery
       this.hls.on(Hls.Events.ERROR, (_event, data) => {
         if (!data.fatal) return;
-
         switch (data.type) {
           case Hls.ErrorTypes.NETWORK_ERROR:
             console.warn('[HLS] Fatal network error, attempting recovery...');
@@ -176,10 +179,9 @@ export class AdDisplay {
     }
   }
 
-  // T006: play() with catch — falls back to muted autoplay
+  // T006: play() with catch — muted fallback
   private tryPlay(): void {
     if (!this.videoEl) return;
-
     this.videoEl.play().catch(() => {
       console.warn('[Video] Autoplay blocked, retrying muted...');
       if (this.videoEl) {
@@ -203,11 +205,10 @@ export class AdDisplay {
     }
   }
 
-  // T008: Watchdog — detect stalled playback and recover
+  // T008: Watchdog — detect stalled playback
   private startWatchdog(): void {
     this.watchdogTimer = window.setInterval(() => {
       if (!this.videoEl || this.videoEl.paused) return;
-
       const ct = this.videoEl.currentTime;
       if (this.lastCurrentTime >= 0 && ct === this.lastCurrentTime) {
         this.stallCount++;
@@ -237,7 +238,6 @@ export class AdDisplay {
   private goToSlide(index: number): void {
     this.carouselIndex = index;
     this.updateCarousel();
-    // Reset timer
     if (this.carouselTimer) {
       clearInterval(this.carouselTimer);
       this.startCarousel();

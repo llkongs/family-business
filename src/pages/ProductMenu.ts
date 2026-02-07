@@ -1,6 +1,13 @@
 import { categories, products, getProductsByCategory } from '../data/mockData';
 import type { Product } from '../data/mockData';
 
+// T015: HTML escape helper to prevent XSS from external data
+function esc(s: string): string {
+  const el = document.createElement('span');
+  el.textContent = s;
+  return el.innerHTML;
+}
+
 export class ProductMenu {
   private container: HTMLElement;
   private onBack: () => void;
@@ -27,9 +34,9 @@ export class ProductMenu {
           <!-- Category Navigation -->
           <nav class="category-nav" id="category-nav">
             ${categories.map(cat => `
-              <div class="category-item ${cat.id === this.activeCategory ? 'active' : ''}" 
-                   data-category="${cat.id}">
-                ${cat.icon || ''} ${cat.name}
+              <div class="category-item ${cat.id === this.activeCategory ? 'active' : ''}"
+                   data-category="${esc(cat.id)}">
+                ${esc(cat.icon || '')} ${esc(cat.name)}
               </div>
             `).join('')}
           </nav>
@@ -52,7 +59,7 @@ export class ProductMenu {
 
       return `
         <section class="category-section" data-section="${cat.id}">
-          <h2 class="category-title">${cat.icon || ''} ${cat.name}</h2>
+          <h2 class="category-title">${esc(cat.icon || '')} ${esc(cat.name)}</h2>
           ${categoryProducts.map(product => this.renderProductCard(product)).join('')}
         </section>
       `;
@@ -62,12 +69,12 @@ export class ProductMenu {
   private renderProductCard(product: Product): string {
     return `
       <div class="product-card" data-product-id="${product.id}">
-        <img class="product-image" src="${product.image}" alt="${product.name}" 
+        <img class="product-image" src="${product.image}" alt="${esc(product.name)}"
              onerror="this.src='https://via.placeholder.com/80?text=图片'" />
         <div class="product-info">
           <div>
-            <h3 class="product-name">${product.name}</h3>
-            <p class="product-desc">${product.description}</p>
+            <h3 class="product-name">${esc(product.name)}</h3>
+            <p class="product-desc">${esc(product.description)}</p>
           </div>
           <div class="product-price">仅供展示</div>
         </div>
@@ -160,11 +167,11 @@ export class ProductMenu {
     modal.innerHTML = `
       <div class="modal-content">
         <button class="modal-close" id="modal-close">×</button>
-        <img class="modal-image" src="${product.image}" alt="${product.name}"
+        <img class="modal-image" src="${product.image}" alt="${esc(product.name)}"
              onerror="this.src='https://via.placeholder.com/400x250?text=图片'" />
         <div class="modal-body">
-          <h2 class="modal-title">${product.name}</h2>
-          <p class="modal-description">${product.description}</p>
+          <h2 class="modal-title">${esc(product.name)}</h2>
+          <p class="modal-description">${esc(product.description)}</p>
           <div class="modal-price">仅供展示</div>
         </div>
       </div>

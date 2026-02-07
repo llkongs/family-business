@@ -56,9 +56,33 @@ impl Config {
         })
     }
 
+    /// T019: Strong validation — fail fast if repo_root is wrong
     pub fn validate(&self) -> Result<()> {
-        anyhow::ensure!(self.repo_root.exists(), "Repo root does not exist: {}", self.repo_root.display());
-        anyhow::ensure!(self.data_dir().exists(), "src/data directory not found in repo");
+        anyhow::ensure!(
+            self.repo_root.exists(),
+            "Repo root does not exist: {}",
+            self.repo_root.display()
+        );
+        anyhow::ensure!(
+            self.repo_root.join(".git").exists(),
+            "Not a git repository (no .git): {}",
+            self.repo_root.display()
+        );
+        anyhow::ensure!(
+            self.repo_root.join("package.json").exists(),
+            "package.json not found — wrong repo root? {}",
+            self.repo_root.display()
+        );
+        anyhow::ensure!(
+            self.data_dir().exists(),
+            "src/data/ not found in repo: {}",
+            self.repo_root.display()
+        );
+        anyhow::ensure!(
+            self.public_dir().exists(),
+            "public/ not found in repo: {}",
+            self.repo_root.display()
+        );
         Ok(())
     }
 

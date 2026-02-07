@@ -14,6 +14,8 @@ pub struct SyncOptions {
 }
 
 pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
+    let sync_start = std::time::Instant::now();
+
     // 1. Initialize auth and client
     let auth = FeishuAuth::new(config.feishu_app_id.clone(), config.feishu_app_secret.clone());
     let client = BitableClient::new(auth.clone(), config.bitable_app_token.clone());
@@ -252,7 +254,17 @@ pub async fn run_sync(config: &Config, opts: &SyncOptions) -> Result<()> {
         tracing::info!("No changes detected, nothing to commit");
     }
 
-    tracing::info!("Sync completed successfully!");
+    // T020: Structured sync summary
+    let elapsed = sync_start.elapsed();
+    tracing::info!(
+        elapsed_sec = elapsed.as_secs_f64(),
+        brands = brands.len(),
+        categories = display_categories.len(),
+        products = raw_products.len(),
+        media = media_items.len(),
+        store = store_info.name.as_str(),
+        "Sync completed successfully"
+    );
     Ok(())
 }
 

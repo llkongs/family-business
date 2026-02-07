@@ -55,9 +55,8 @@
   --transition-normal: 300ms ease;
   --transition-slow: 500ms ease;
 
-  /* Layout — vertical 9:16 screen (1080×1920) */
-  --header-height: 6vh;
-  --bottom-bar-height: 8vh;
+  /* Layout — vertical 9:16 4K screen (2160×3840) */
+  --header-height: 20vh;
 }
 
 /* Reset & Base */
@@ -148,12 +147,13 @@ body {
 
 .store-info {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  flex-direction: column;
+  justify-content: center;
+  gap: 1vh;
 }
 
 .store-name {
-  font-size: var(--font-size-lg);
+  font-size: min(100px, 4.6vw);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
@@ -161,10 +161,10 @@ body {
 .store-phone {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
+  gap: 0.5vw;
+  font-size: min(78px, 3.6vw);
   background: rgba(255, 255, 255, 0.2);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: 0.4vh 1vw;
   border-radius: var(--radius-full);
 }
 
@@ -179,11 +179,12 @@ body {
 }
 
 .qr-code {
-  height: calc(var(--header-height) - 8px);
+  height: calc(var(--header-height) - 40px);
   aspect-ratio: 1;
+  min-height: 500px;
   background: white;
   border-radius: var(--radius-sm);
-  padding: 3px;
+  padding: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -222,10 +223,10 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 1.5vh 2vw;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
   color: white;
-  font-size: var(--font-size-lg);
+  font-size: min(60px, 2.8vw);
   font-weight: var(--font-weight-medium);
   text-align: center;
   pointer-events: none;
@@ -267,10 +268,10 @@ body {
 
 .slide-title {
   position: absolute;
-  bottom: 40px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: var(--font-size-xl);
+  font-size: min(56px, 2.6vw);
   font-weight: var(--font-weight-bold);
   color: white;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
@@ -281,17 +282,17 @@ body {
 /* Carousel Dots */
 .carousel-dots {
   position: absolute;
-  bottom: 12px;
+  bottom: min(32px, 0.8vh);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: var(--spacing-sm);
+  gap: min(16px, 0.7vw);
   z-index: 10;
 }
 
 .carousel-dot {
-  width: 10px;
-  height: 10px;
+  width: min(24px, 1.1vw);
+  height: min(24px, 1.1vw);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   transition: all var(--transition-fast);
@@ -313,41 +314,37 @@ body {
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.3);
-  font-size: var(--font-size-xl);
+  font-size: min(60px, 2.8vw);
 }
 
-/* Bottom Bar with Enter Menu Button */
-.bottom-bar {
-  height: var(--bottom-bar-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #2c1810, #1a0f0a);
-  flex-shrink: 0;
-}
-
-.enter-menu-btn {
-  padding: var(--spacing-md) var(--spacing-xl);
-  background: linear-gradient(135deg, #8B4513, #DAA520);
-  color: white;
-  border: none;
+/* T012/T018: CTA Floating Action Button — right-bottom of image area */
+.cta-fab {
+  position: absolute;
+  right: min(72px, 3.3vw);
+  bottom: min(72px, 1.9vh);
+  height: min(120px, 3.1vh);
+  padding: 0 min(64px, 3vw);
+  background: rgba(30, 20, 10, 0.75);
+  color: #DAA520;
+  border: 2px solid rgba(218, 165, 32, 0.5);
   border-radius: var(--radius-full);
-  font-size: var(--font-size-lg);
+  font-size: min(52px, 2.4vw);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.5);
-  animation: pulse 2s infinite;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.5vw;
+  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+  white-space: nowrap;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 4px 20px rgba(139, 69, 19, 0.5);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 4px 30px rgba(218, 165, 32, 0.7);
-  }
+.cta-fab:hover,
+.cta-fab:active {
+  background: rgba(40, 25, 12, 0.9);
+  border-color: rgba(218, 165, 32, 0.8);
+  box-shadow: 0 6px 32px rgba(218, 165, 32, 0.3);
 }
 
 /* ============================================
