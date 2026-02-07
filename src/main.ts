@@ -35,13 +35,15 @@ class App {
 
   // T013: 全局异常兜底
   private installGlobalErrorHandlers(): void {
-    window.onerror = (_msg, _src, _line, _col, _err) => {
+    window.onerror = (_msg, src, _line, _col, _err) => {
+      // Ignore errors from browser extensions
+      if (!src || !src.startsWith(location.origin)) return;
       console.error('[GlobalError]', _msg);
       this.scheduleRecovery();
     };
     window.onunhandledrejection = (ev) => {
       console.error('[UnhandledRejection]', ev.reason);
-      this.scheduleRecovery();
+      // Only log, don't reload — extensions can leak unhandled rejections
     };
   }
 
