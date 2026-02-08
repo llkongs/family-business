@@ -11,7 +11,6 @@ export interface MediaItem {
     type: 'video' | 'image';
     url: string;
     title?: string;
-    description?: string; // subtitle text shown below title
     duration?: number; // for images, duration in ms
 }
 
