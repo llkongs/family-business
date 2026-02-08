@@ -115,7 +115,7 @@ export const categories: Category[] = [
 // Slogans - 滚动标语
 export const slogans: Slogan[] = [
     { text: '🎉 欢迎光临伟盛酒业，绍兴黄酒正宗产地直供' },
-    { text: '🏺 古法酒藏，经典传承，品质保证' },
+    { text: '🏺 古法窖藏，经典传承，品质保证' },
 ];
 
 // Products - 黄酒商品
