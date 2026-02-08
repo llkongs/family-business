@@ -95,8 +95,8 @@ export const mediaPlaylist: MediaItem[] = [
     },
     {
         type: 'image',
-        url: '',
-        title: '古越龙山酿造',
+        url: `${BASE_URL}images/media/古越龙山意境.png`,
+        title: '古越龙山意境',
         duration: 5000
     },
     {
